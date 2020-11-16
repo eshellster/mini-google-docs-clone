@@ -1,26 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useMemo, useState } from "react";
 import './App.css';
+import { createEditor,Node } from 'slate'
+import { Slate, Editable, withReact } from 'slate-react'
 
-function App() {
+
+const App = () => {
+  const editor = useMemo(() => withReact(createEditor()), [])
+  // Add the initial value when setting up our state.
+  const [value, setValue] = useState<Node[]>([
+    {
+      type: 'paragraph',
+      children: [{ text: 'A line of text in a paragraph.' }],
+    },
+  ])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Slate editor={editor} value={value} onChange={newValue => setValue(newValue)}>
+     <Editable
+        onKeyDown={event => {
+          if (event.key === '&') {
+            // Prevent the ampersand character from being inserted.
+            event.preventDefault()
+            // Execute the `insertText` method when the event occurs.
+            editor.insertText("and")
+          }
+        }}
+      />
+    </Slate>
+  )
 }
 
 export default App;
