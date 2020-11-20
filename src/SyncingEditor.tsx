@@ -1,12 +1,47 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { createEditor, Editor, Node, Transforms, Text } from "slate";
+import { createEditor, Editor, Transforms, Text, Node } from "slate";
 import { Slate, Editable, withReact } from "slate-react";
 
+// 사용자 지정 도우미 집합을 정의합니다.
+const CustomEditor = {
+  isBoldMarkActive(editor: any) {
+    const [match] = Editor.nodes(editor, {
+      match: (n) => n.bold === true,
+      universal: true,
+    });
+
+    return !!match;
+  },
+
+  isCodeBlockActive(editor: any) {
+    const [match] = Editor.nodes(editor, {
+      match: (n) => n.type === "code",
+    });
+
+    return !!match;
+  },
+
+  toggleBoldMark(editor: any) {
+    const isActive = CustomEditor.isBoldMarkActive(editor);
+    Transforms.setNodes(
+      editor,
+      { bold: isActive ? null : true },
+      { match: (n) => Text.isText(n), split: true }
+    );
+  },
+
+  toggleCodeBlock(editor: any) {
+    const isActive = CustomEditor.isCodeBlockActive(editor);
+    Transforms.setNodes(
+      editor,
+      { type: isActive ? null : "code" },
+      { match: (n) => Editor.isBlock(editor, n) }
+    );
+  },
+};
+
 export const SyncingEditor = () => {
-  // 랜더링간에 변경되지 않는 Slate 편집기 개체를 만듭니다.
   const editor = useMemo(() => withReact(createEditor()), []);
-  // 편집기의 값에 대한 상태를 추적합니다.
-  // 상태를 설정할 때 초기 값을 추가합니다.
   const [value, setValue] = useState<Node[]>([
     {
       type: "paragraph",
@@ -14,8 +49,6 @@ export const SyncingEditor = () => {
     },
   ]);
 
-  // Define a rendering function based on the element passed to `props`. We use
-  // `useCallback` here to memoize the function for subsequent renders.
   const renderElement = useCallback((props) => {
     switch (props.element.type) {
       case "code":
@@ -25,51 +58,31 @@ export const SyncingEditor = () => {
     }
   }, []);
 
-  //슬레이트 컨텍스트를 랜더링합니다.
+  const renderLeaf = useCallback((props) => {
+    return <Leaf {...props} />;
+  }, []);
+
   return (
-    //컨텍스트 내에 편집 가능한 구성 요소를 추가합니다.
-    <Slate
-      editor={editor}
-      value={value}
-      onChange={(newValue) => {
-        setValue(newValue);
-      }}
-    >
+    <Slate editor={editor} value={value} onChange={(value) => setValue(value)}>
       <Editable
         renderElement={renderElement}
-        renderLeaf={Leaf}
+        renderLeaf={renderLeaf}
         onKeyDown={(event) => {
           if (!event.ctrlKey) {
             return;
           }
 
+          // 'onKeyDown' 로직을 새 명령으로 대체합니다.
           switch (event.key) {
-            // "`"를 누르면 기존 코드 블록 로직을 유지합니다.
             case "`": {
               event.preventDefault();
-              const [match] = Editor.nodes(editor, {
-                match: (n) => n.type === "code",
-              });
-              Transforms.setNodes(
-                editor,
-                { type: match ? "paragraph" : "code" },
-                { match: (n) => Editor.isBlock(editor, n) }
-              );
+              CustomEditor.toggleCodeBlock(editor);
               break;
             }
 
-            // "B"를 누르면 선택 영역의 택스트를 굵게 표시합니다.
             case "b": {
-              console.log("'b' 클릭");
-
               event.preventDefault();
-              Transforms.setNodes(
-                editor,
-                { bold: true },
-                // 텍스트 노드에 적용하고
-                // 선택된 부분만 겹칩니다.
-                { match: (n) => Text.isText(n), split: true }
-              );
+              CustomEditor.toggleBoldMark(editor);
               break;
             }
           }
