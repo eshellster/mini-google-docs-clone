@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { createEditor, Node } from "slate";
+import { createEditor, Editor, Node, Transforms } from "slate";
 import { Slate, Editable, withReact } from "slate-react";
 
 export const SyncingEditor = () => {
@@ -38,11 +38,15 @@ export const SyncingEditor = () => {
       <Editable
         renderElement={renderElement}
         onKeyDown={(event) => {
-          if (event.key === "&") {
-            // Prevent the ampersand character from being inserted.
+          if (event.key === "`" && event.ctrlKey) {
+            // "`" 만 삽입되는 것을 방지합니다.
             event.preventDefault();
-            // Execute the `insertText` method when the event occurs.
-            editor.insertText("and");
+            // 현재 유형을 "code"로 설정합니다.
+            Transforms.setNodes(
+              editor,
+              { type: "code" },
+              { match: (n) => Editor.isBlock(editor, n) }
+            );
           }
         }}
       />
