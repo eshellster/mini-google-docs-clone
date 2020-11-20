@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { createEditor, Node } from "slate";
 import { Slate, Editable, withReact } from "slate-react";
 
@@ -14,6 +14,17 @@ export const SyncingEditor = () => {
     },
   ]);
 
+  // Define a rendering function based on the element passed to `props`. We use
+  // `useCallback` here to memoize the function for subsequent renders.
+  const renderElement = useCallback((props) => {
+    switch (props.element.type) {
+      case "code":
+        return <CodeElement {...props} />;
+      default:
+        return <DefaultElement {...props} />;
+    }
+  }, []);
+
   //슬레이트 컨텍스트를 랜더링합니다.
   return (
     //컨텍스트 내에 편집 가능한 구성 요소를 추가합니다.
@@ -25,6 +36,7 @@ export const SyncingEditor = () => {
       }}
     >
       <Editable
+        renderElement={renderElement}
         onKeyDown={(event) => {
           if (event.key === "&") {
             // Prevent the ampersand character from being inserted.
@@ -36,4 +48,16 @@ export const SyncingEditor = () => {
       />
     </Slate>
   );
+};
+
+const CodeElement = (props: any) => {
+  return (
+    <pre {...props.attributes}>
+      <code>{props.children}</code>
+    </pre>
+  );
+};
+
+const DefaultElement = (props: any) => {
+  return <p {...props.attributes}>{props.children}</p>;
 };
