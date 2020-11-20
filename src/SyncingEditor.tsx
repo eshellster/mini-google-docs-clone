@@ -2,7 +2,6 @@ import React, { useCallback, useMemo, useState } from "react";
 import { createEditor, Editor, Transforms, Text, Node } from "slate";
 import { Slate, Editable, withReact } from "slate-react";
 
-// 사용자 지정 도우미 집합을 정의합니다.
 const CustomEditor = {
   isBoldMarkActive(editor: any) {
     const [match] = Editor.nodes(editor, {
@@ -63,7 +62,26 @@ export const SyncingEditor = () => {
   }, []);
 
   return (
+    // 동일한 메서드를 호출하는 버튼이 있는 툴바를 추가합니다.
     <Slate editor={editor} value={value} onChange={(value) => setValue(value)}>
+      <div>
+        <button
+          onMouseDown={(event) => {
+            event.preventDefault();
+            CustomEditor.toggleBoldMark(editor);
+          }}
+        >
+          Bold
+        </button>
+        <button
+          onMouseDown={(event) => {
+            event.preventDefault();
+            CustomEditor.toggleCodeBlock(editor);
+          }}
+        >
+          Code Block
+        </button>
+      </div>
       <Editable
         renderElement={renderElement}
         renderLeaf={renderLeaf}
@@ -72,7 +90,6 @@ export const SyncingEditor = () => {
             return;
           }
 
-          // 'onKeyDown' 로직을 새 명령으로 대체합니다.
           switch (event.key) {
             case "`": {
               event.preventDefault();
