@@ -39,12 +39,17 @@ export const SyncingEditor = () => {
         renderElement={renderElement}
         onKeyDown={(event) => {
           if (event.key === "`" && event.ctrlKey) {
-            // "`" 만 삽입되는 것을 방지합니다.
             event.preventDefault();
-            // 현재 유형을 "code"로 설정합니다.
+            // 현재 선택된 블록이 코드 블록인지 확인합니다.
+            const [match] = Editor.nodes(editor, {
+              match: (n) => n.type === "code",
+            });
+            // console.log(match);
+
+            // 이미 일치하는 항목이 있는지 여부에 따라 블록 유형을 전환합니다.
             Transforms.setNodes(
               editor,
-              { type: "code" },
+              { type: match ? "paragraph" : "code" },
               { match: (n) => Editor.isBlock(editor, n) }
             );
           }
