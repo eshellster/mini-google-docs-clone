@@ -4,12 +4,14 @@ import { Slate, Editable, withReact } from "slate-react";
 
 export const SyncingEditor = () => {
   const editor = useMemo(() => withReact(createEditor()), []);
-  const [value, setValue] = useState<Node[]>([
-    {
-      type: "paragraph",
-      children: [{ text: "A line of text in a paragraph." }],
-    },
-  ]);
+  const [value, setValue] = useState<Node[]>(
+    JSON.parse(localStorage.getItem("content")!) || [
+      {
+        type: "paragraph",
+        children: [{ text: "A line of text in a paragraph." }],
+      },
+    ]
+  );
 
   return (
     <Slate
