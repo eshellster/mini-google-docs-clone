@@ -12,7 +12,15 @@ export const SyncingEditor = () => {
   ]);
 
   return (
-    <Slate editor={editor} value={value} onChange={(value) => setValue(value)}>
+    <Slate
+      editor={editor}
+      value={value}
+      onChange={(value) => {
+        setValue(value); // Save the value to Local Storage.
+        const content = JSON.stringify(value);
+        localStorage.setItem("content", content);
+      }}
+    >
       <Editable />
     </Slate>
   );
