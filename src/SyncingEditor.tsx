@@ -24,7 +24,11 @@ export const SyncingEditor = () => {
         setValue(newValue);
       }}
     >
-      <Editable />
+      <Editable
+        onKeyDown={(event) => {
+          console.log(event.key);
+        }}
+      />
     </Slate>
   );
 };
