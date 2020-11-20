@@ -37,6 +37,7 @@ export const SyncingEditor = () => {
     >
       <Editable
         renderElement={renderElement}
+        renderLeaf={Leaf}
         onKeyDown={(event) => {
           if (!event.ctrlKey) {
             return;
@@ -59,6 +60,8 @@ export const SyncingEditor = () => {
 
             // "B"를 누르면 선택 영역의 택스트를 굵게 표시합니다.
             case "b": {
+              console.log("'b' 클릭");
+
               event.preventDefault();
               Transforms.setNodes(
                 editor,
@@ -86,4 +89,15 @@ const CodeElement = (props: any) => {
 
 const DefaultElement = (props: any) => {
   return <p {...props.attributes}>{props.children}</p>;
+};
+
+const Leaf = (props: any) => {
+  return (
+    <span
+      {...props.attributes}
+      style={{ fontWeight: props.leaf.bold ? "bold" : "normal" }}
+    >
+      {props.children}
+    </span>
+  );
 };
