@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { createEditor, Editor, Node, Transforms } from "slate";
+import { createEditor, Editor, Node, Transforms, Text } from "slate";
 import { Slate, Editable, withReact } from "slate-react";
 
 export const SyncingEditor = () => {
@@ -38,20 +38,37 @@ export const SyncingEditor = () => {
       <Editable
         renderElement={renderElement}
         onKeyDown={(event) => {
-          if (event.key === "`" && event.ctrlKey) {
-            event.preventDefault();
-            // 현재 선택된 블록이 코드 블록인지 확인합니다.
-            const [match] = Editor.nodes(editor, {
-              match: (n) => n.type === "code",
-            });
-            // console.log(match);
+          if (!event.ctrlKey) {
+            return;
+          }
 
-            // 이미 일치하는 항목이 있는지 여부에 따라 블록 유형을 전환합니다.
-            Transforms.setNodes(
-              editor,
-              { type: match ? "paragraph" : "code" },
-              { match: (n) => Editor.isBlock(editor, n) }
-            );
+          switch (event.key) {
+            // "`"를 누르면 기존 코드 블록 로직을 유지합니다.
+            case "`": {
+              event.preventDefault();
+              const [match] = Editor.nodes(editor, {
+                match: (n) => n.type === "code",
+              });
+              Transforms.setNodes(
+                editor,
+                { type: match ? "paragraph" : "code" },
+                { match: (n) => Editor.isBlock(editor, n) }
+              );
+              break;
+            }
+
+            // "B"를 누르면 선택 영역의 택스트를 굵게 표시합니다.
+            case "b": {
+              event.preventDefault();
+              Transforms.setNodes(
+                editor,
+                { bold: true },
+                // 텍스트 노드에 적용하고
+                // 선택된 부분만 겹칩니다.
+                { match: (n) => Text.isText(n), split: true }
+              );
+              break;
+            }
           }
         }}
       />
