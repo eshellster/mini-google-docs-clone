@@ -1,0 +1,96 @@
+@font-face {
+  font-family: 'puzz';
+  src:  url('fonts/puzz.eot?67k7o7');
+  src:  url('fonts/puzz.eot?67k7o7#iefix') format('embedded-opentype'),
+    url('fonts/puzz.ttf?67k7o7') format('truetype'),
+    url('fonts/puzz.woff?67k7o7') format('woff'),
+    url('fonts/puzz.svg?67k7o7#puzz') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'puzz' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-Note:before {
+  content: "\e900";
+}
+.icon-moveHandle:before {
+  content: "\e901";
+}
+.icon-format_Bold:before {
+  content: "\e902";
+}
+.icon-format_Puzzle:before {
+  content: "\e903";
+}
+.icon-format_Strikethrough:before {
+  content: "\e904";
+}
+.icon-format_Underlined:before {
+  content: "\e905";
+}
+.icon-format_italic:before {
+  content: "\e906";
+}
+.icon-MixNote:before {
+  content: "\e907";
+}
+.icon-Recall:before {
+  content: "\e908";
+}
+.icon-Recommend:before {
+  content: "\e909";
+}
+.icon-Star:before {
+  content: "\e90a";
+}
+.icon-Popularity:before {
+  content: "\e90b";
+}
+.icon-Mix:before {
+  content: "\e90c";
+}
+.icon-Add:before {
+  content: "\e90d";
+}
+.icon-Close:before {
+  content: "\e90e";
+}
+.icon-Replay:before {
+  content: "\e90f";
+}
+.icon-Cheat:before {
+  content: "\e910";
+}
+.icon-Prev:before {
+  content: "\e911";
+}
+.icon-Next:before {
+  content: "\e912";
+}
+.icon-questionMark:before {
+  content: "\e913";
+}
+.icon-Trash:before {
+  content: "\e914";
+}
+.icon-Sender:before {
+  content: "\e915";
+}
+.icon-NoteOutline:before {
+  content: "\e916";
+}

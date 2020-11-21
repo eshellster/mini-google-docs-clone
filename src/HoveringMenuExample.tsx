@@ -102,9 +102,11 @@ const HoveringToolbar = () => {
   return (
     <Portal>
       <Menu ref={ref} className=".hoverMenu">
-        <FormatButton format="bold" icon="Bold" />
-        <FormatButton format="italic" icon="italic" />
-        <FormatButton format="underlined" icon="Underlined" />
+        <FormatButton format="bold" icon="format_Bold" />
+        <FormatButton format="italic" icon="format_italic" />
+        <FormatButton format="underlined" icon="format_Underlined" />
+        <FormatButton format="strikethrough" icon="format_Strikethrough" />
+        <FormatButton format="puzzle" icon="format_Puzzle" />
       </Menu>
     </Portal>
   );
