@@ -2,8 +2,9 @@ import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Slate, Editable, ReactEditor, withReact, useSlate } from "slate-react";
 import { Editor, Transforms, Text, createEditor, Node } from "slate";
 import { withHistory } from "slate-history";
-import { Button, Icon, Menu, Portal } from "./components";
+import { Button, Menu, Portal } from "./components";
 import { Range } from "slate";
+import Icon from "./Icon";
 
 const HoveringMenuExample = () => {
   const [value, setValue] = useState<Node[]>(initialValue);
@@ -101,9 +102,9 @@ const HoveringToolbar = () => {
   return (
     <Portal>
       <Menu ref={ref} className=".hoverMenu">
-        <FormatButton format="bold" icon="format_bold" />
-        <FormatButton format="italic" icon="format_italic" />
-        <FormatButton format="underlined" icon="format_underlined" />
+        <FormatButton format="bold" icon="Bold" />
+        <FormatButton format="italic" icon="italic" />
+        <FormatButton format="underlined" icon="Underlined" />
       </Menu>
     </Portal>
   );
@@ -120,7 +121,11 @@ const FormatButton = ({ format, icon }: any) => {
         toggleFormat(editor, format);
       }}
     >
-      <Icon>{icon}</Icon>
+      <Icon
+        icon={icon}
+        size={20}
+        color={isFormatActive(editor, format) ? "#aaa" : "white"}
+      />
     </Button>
   );
 };

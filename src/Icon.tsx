@@ -1,9 +1,15 @@
 import React from "react";
-import PropTypes from "prop-types";
 import IcomoonReact from "icomoon-react";
 import iconSet from "./selection.json";
 
-const Icon = (props: any) => {
+interface IconProps {
+  className?: string;
+  color?: string;
+  icon: string;
+  size?: string | number;
+}
+
+const Icon = (props: IconProps) => {
   const { color, size, icon, className } = props;
   return (
     <IcomoonReact
@@ -14,19 +20,6 @@ const Icon = (props: any) => {
       icon={icon}
     />
   );
-};
-
-Icon.propTypes = {
-  className: PropTypes.string,
-  color: PropTypes.string,
-  icon: PropTypes.string.isRequired,
-  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-};
-
-Icon.defaultProps = {
-  className: "",
-  color: "",
-  size: "100%",
 };
 
 export default Icon;

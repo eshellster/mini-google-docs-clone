@@ -1,5 +1,6 @@
 import React, { Ref, PropsWithChildren } from "react";
 import ReactDOM from "react-dom";
+// import { act } from "react-dom/test-utils";
 import "./components.css";
 
 interface BaseProps {
@@ -21,7 +22,7 @@ export const Button = React.forwardRef(
       } & BaseProps
     >,
     ref: Ref<HTMLSpanElement>
-  ) => <span {...props} ref={ref} className="button" />
+  ) => <span {...props} ref={ref} />
 );
 
 // export const EditorValue = React.forwardRef(
@@ -81,12 +82,12 @@ export const Button = React.forwardRef(
 //   }
 // );
 
-export const Icon = React.forwardRef(
-  (
-    { className, ...props }: PropsWithChildren<BaseProps>,
-    ref: Ref<HTMLSpanElement>
-  ) => <span {...props} ref={ref} className="material-icons" />
-);
+// export const Icon = React.forwardRef(
+//   (
+//     { className, ...props }: PropsWithChildren<BaseProps>,
+//     ref: Ref<HTMLSpanElement>
+//   ) => <span {...props} ref={ref} className="material-icons" />
+// );
 
 // export const Instruction = React.forwardRef(
 //   (
