@@ -25,6 +25,8 @@ const HoveringMenuExample = () => {
               return toggleFormat(editor, "italic");
             case "formatUnderline":
               return toggleFormat(editor, "underline");
+            case "formatStrikethrough":
+              return toggleFormat(editor, "strikethrough");
           }
         }}
       />
@@ -61,7 +63,9 @@ const Leaf = ({ attributes, children, leaf }: any) => {
   if (leaf.underlined) {
     children = <u>{children}</u>;
   }
-
+  if (leaf.strikethrough) {
+    children = <del style={{ color: "gray" }}>{children}</del>;
+  }
   return <span {...attributes}>{children}</span>;
 };
 
@@ -101,7 +105,7 @@ const HoveringToolbar = () => {
 
   return (
     <Portal>
-      <Menu ref={ref} className=".hoverMenu">
+      <Menu ref={ref}>
         <FormatButton format="bold" icon="format_Bold" />
         <FormatButton format="italic" icon="format_italic" />
         <FormatButton format="underlined" icon="format_Underlined" />
@@ -116,15 +120,15 @@ const FormatButton = ({ format, icon }: any) => {
   const editor = useSlate();
   return (
     <Button
-      reversed
-      active={isFormatActive(editor, format)}
       onMouseDown={(event: any) => {
         event.preventDefault();
         toggleFormat(editor, format);
       }}
     >
       <Icon
-        icon={icon}
+        icon={
+          isFormatActive(editor, format) && format === "puzzle" ? null : icon
+        }
         size={20}
         color={isFormatActive(editor, format) ? "#aaa" : "white"}
       />

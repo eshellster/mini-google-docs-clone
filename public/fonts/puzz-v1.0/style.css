@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'puzz';
-  src:  url('fonts/puzz.eot?67k7o7');
-  src:  url('fonts/puzz.eot?67k7o7#iefix') format('embedded-opentype'),
-    url('fonts/puzz.ttf?67k7o7') format('truetype'),
-    url('fonts/puzz.woff?67k7o7') format('woff'),
-    url('fonts/puzz.svg?67k7o7#puzz') format('svg');
+  src:  url('fonts/puzz.eot?ml0cul');
+  src:  url('fonts/puzz.eot?ml0cul#iefix') format('embedded-opentype'),
+    url('fonts/puzz.ttf?ml0cul') format('truetype'),
+    url('fonts/puzz.woff?ml0cul') format('woff'),
+    url('fonts/puzz.svg?ml0cul#puzz') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,72 +25,87 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-Note:before {
+.icon-url_link:before {
   content: "\e900";
 }
-.icon-moveHandle:before {
+.icon-menu_handle:before {
   content: "\e901";
 }
 .icon-format_Bold:before {
   content: "\e902";
 }
-.icon-format_Puzzle:before {
+.icon-puzz_play:before {
   content: "\e903";
 }
-.icon-format_Strikethrough:before {
+.icon-make_Puzzle:before {
   content: "\e904";
 }
-.icon-format_Underlined:before {
+.icon-format_Puzzle:before {
   content: "\e905";
 }
-.icon-format_italic:before {
+.icon-format_Strikethrough:before {
   content: "\e906";
 }
-.icon-MixNote:before {
+.icon-format_Underlined:before {
   content: "\e907";
 }
-.icon-Recall:before {
+.icon-format_italic:before {
   content: "\e908";
 }
-.icon-Recommend:before {
+.icon-MixNote:before {
   content: "\e909";
 }
-.icon-Star:before {
+.icon-Recall:before {
   content: "\e90a";
 }
-.icon-Popularity:before {
+.icon-Recommend:before {
   content: "\e90b";
 }
-.icon-Mix:before {
+.icon-Star:before {
   content: "\e90c";
 }
-.icon-Add:before {
+.icon-Popularity:before {
   content: "\e90d";
 }
-.icon-Close:before {
+.icon-Mix:before {
   content: "\e90e";
 }
-.icon-Replay:before {
+.icon-Add:before {
   content: "\e90f";
 }
-.icon-Cheat:before {
+.icon-Close:before {
   content: "\e910";
 }
-.icon-Prev:before {
+.icon-Replay:before {
   content: "\e911";
 }
-.icon-Next:before {
+.icon-block_message:before {
   content: "\e912";
 }
-.icon-questionMark:before {
+.icon-Cheat:before {
   content: "\e913";
 }
-.icon-Trash:before {
+.icon-Prev:before {
   content: "\e914";
 }
-.icon-Sender:before {
+.icon-Next:before {
   content: "\e915";
 }
-.icon-NoteOutline:before {
+.icon-format_quiz:before {
   content: "\e916";
+}
+.icon-questionMark:before {
+  content: "\e917";
+}
+.icon-Trash:before {
+  content: "\e918";
+}
+.icon-Sender:before {
+  content: "\e919";
+}
+.icon-NoteOutline:before {
+  content: "\e91a";
+}
+.icon-Note:before {
+  content: "\e91b";
 }

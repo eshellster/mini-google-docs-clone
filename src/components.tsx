@@ -22,7 +22,7 @@ export const Button = React.forwardRef(
       } & BaseProps
     >,
     ref: Ref<HTMLSpanElement>
-  ) => <span {...props} ref={ref} />
+  ) => <span {...props} ref={ref} className="button" />
 );
 
 // export const EditorValue = React.forwardRef(

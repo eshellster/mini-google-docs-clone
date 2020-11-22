@@ -16,6 +16,9 @@
 .menu > * + * {
   margin-left: 15px;
 }
+.button {
+  cursor: pointer;
+}
 
 .toolbar {
   position: relative;
