@@ -66,6 +66,15 @@ const Leaf = ({ attributes, children, leaf }: any) => {
   if (leaf.strikethrough) {
     children = <del style={{ color: "gray" }}>{children}</del>;
   }
+  if (leaf.puzzle) {
+    children = (
+      <span>
+        <Icon icon="puzz_play" size={20} color="lightblue" />
+        <span>[한글로 번역된 내용이 들어간다.]</span>
+        {children}
+      </span>
+    );
+  }
   return <span {...attributes}>{children}</span>;
 };
 
