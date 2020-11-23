@@ -1,11 +1,11 @@
 import React from "react";
 import "./App.css";
-import HoveringMenuExample from "./HoveringMenuExample";
-import { SyncingEditor } from "./SyncingEditor";
+import HoveringMenuExample from "./editors/HoveringMenuExample";
+import { SyncingEditor } from "./editors/SyncingEditor";
 
 const App = () => {
   return (
-    <div>
+    <div className="App-header">
       <SyncingEditor />
       <HoveringMenuExample />
     </div>

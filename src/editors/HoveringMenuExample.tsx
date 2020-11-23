@@ -2,13 +2,13 @@ import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Slate, Editable, ReactEditor, withReact, useSlate } from "slate-react";
 import { Editor, Transforms, Text, createEditor, Node } from "slate";
 import { withHistory } from "slate-history";
-import { Button, Menu, Portal } from "./components";
+import { Button, Menu, Portal } from "../components/Components";
 import { Range } from "slate";
-import Icon from "./Icon";
+import Icon from "../Icon";
 
 const HoveringMenuExample = () => {
-  const [value, setValue] = useState<Node[]>(initialValue);
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
+  const [value, setValue] = useState<Node[]>(initialValue);
 
   return (
     <Slate editor={editor} value={value} onChange={(value) => setValue(value)}>

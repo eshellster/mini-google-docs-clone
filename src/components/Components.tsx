@@ -1,7 +1,7 @@
 import React, { Ref, PropsWithChildren } from "react";
 import ReactDOM from "react-dom";
 // import { act } from "react-dom/test-utils";
-import "./components.css";
+import "./Components.css";
 
 interface BaseProps {
   className: string;
