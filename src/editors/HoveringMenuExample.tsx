@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Slate, Editable, ReactEditor, withReact, useSlate } from "slate-react";
 import { Editor, Transforms, Text, createEditor, Node } from "slate";
 import { withHistory } from "slate-history";
-import { Button, Menu, Portal } from "../components/Components";
+import { Button, HoverMenu, Portal } from "../components/Components";
 import { Range } from "slate";
 import Icon from "../Icon";
 
@@ -17,7 +17,7 @@ const HoveringMenuExample = () => {
         renderLeaf={(props) => <Leaf {...props} />}
         placeholder="Enter some text..."
         onDOMBeforeInput={(event: any) => {
-          event.preventDefault();
+          // event.preventDefault();
           switch (event.inputType) {
             case "formatBold":
               return toggleFormat(editor, "bold");
@@ -114,13 +114,13 @@ const HoveringToolbar = () => {
 
   return (
     <Portal>
-      <Menu ref={ref}>
+      <HoverMenu ref={ref}>
         <FormatButton format="bold" icon="format_Bold" />
         <FormatButton format="italic" icon="format_italic" />
         <FormatButton format="underlined" icon="format_Underlined" />
         <FormatButton format="strikethrough" icon="format_Strikethrough" />
         <FormatButton format="puzzle" icon="format_Puzzle" />
-      </Menu>
+      </HoverMenu>
     </Portal>
   );
 };

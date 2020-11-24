@@ -111,11 +111,18 @@ export const Button = React.forwardRef(
 //   )
 // );
 
-export const Menu = React.forwardRef(
+export const HoverMenu = React.forwardRef(
   (
     { className, ...props }: PropsWithChildren<BaseProps>,
     ref: Ref<HTMLDivElement>
   ) => <div {...props} ref={ref} className="menu hoverMenu" />
+);
+
+export const Menu = React.forwardRef(
+  (
+    { className, ...props }: PropsWithChildren<BaseProps>,
+    ref: Ref<HTMLDivElement>
+  ) => <div {...props} ref={ref} />
 );
 
 export const Portal = ({ children }: any) => {
