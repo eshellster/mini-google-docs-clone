@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import isUrl from "is-url";
 import { Slate, Editable, withReact, useSlate } from "slate-react";
 import { Node, Transforms, Editor, Range, createEditor } from "slate";
@@ -9,10 +9,15 @@ import Icon from "../Icon";
 
 const Puzzle = () => {
   const [value, setValue] = useState<Node[]>(initialValue);
+
   const editor = useMemo(
     () => withPuzzles(withHistory(withReact(createEditor()))),
     []
   );
+
+  useEffect(() => {
+    console.log("value:", value);
+  }, [value]);
 
   return (
     <Slate editor={editor} value={value} onChange={(value) => setValue(value)}>
@@ -57,7 +62,7 @@ const withPuzzles = (editor: any) => {
 
 const insertPuzz = (editor: any, eng: any, kor: any) => {
   if (editor) {
-    wrapPuzzle(editor, eng);
+    wrapPuzzle(editor, eng, kor);
   }
 };
 
@@ -125,9 +130,11 @@ const MakePuzzleButton = () => {
   const editor = useSlate();
   // 선택한 문자열 가져오기
   //   const selectedText = window.getSelection();
+  const [target, setTarget] = useState<Range | null>();
+  const [korTarget, setKorTarget] = useState<Range | null>();
 
   const { selection } = editor;
-  //   console.log("before - selection:", selection);
+  console.log("selection", selection?.anchor, selection?.focus);
   //   console.log("eng:", eng);
 
   return (
@@ -137,40 +144,57 @@ const MakePuzzleButton = () => {
         event.preventDefault();
         const eng = window.getSelection()?.toString();
         if (selection && !Range.isCollapsed(selection)) {
-          editor.deleteFragment();
+          const [start, end] = Range.edges(selection);
+          console.log("start end Range: ", start, end);
+
+          const orgRange = start && end && Editor.range(editor, start, end);
+
+          setTarget(orgRange);
+          if (target) {
+            Transforms.select(editor, target);
+          }
+
+          const kor = window.prompt(`"${eng}"의 해석`);
+          if (!kor) return;
+          //   const length = kor.length;
+          editor.insertText(kor);
+          insertPuzz(editor, eng, kor);
+          console.log("eng, kor: ", eng, kor);
+
+          setTarget(null);
         }
+
+        // window.getSelection()?.deleteFromDocument();
 
         // console.log("after - selection:", selection);
 
-        const kor = window.prompt(`"${eng}"의 해석`);
-        if (!kor) return;
-        const length = kor.length;
         // console.log("length", length);
-        // console.log("selection?.anchor: ", selection?.anchor);
 
-        editor.insertText(kor);
+        // editor.insertText(kor);
 
-        const anchorOffset = selection?.anchor.offset;
-        let focusOffset: number = 0;
-        if (anchorOffset) {
-          focusOffset = anchorOffset + length;
-        }
+        // const anchorOffset = selection?.anchor.offset;
+        // let focusOffset: number = 0;
+        // if (anchorOffset) {
+        //   focusOffset = anchorOffset + length;
+        // }
 
-        let focusPath: number[] = [];
-        if (
-          selection?.anchor.path[0] !== undefined &&
-          selection?.anchor.path[1] !== undefined
-        )
-          focusPath = [selection?.anchor.path[0], selection?.anchor.path[1]];
+        // let focusPath: number[] = [];
+        // if (selection?.anchor.path[0] !== undefined) {
+        //   focusPath = selection?.anchor.path;
+        // }
+        // console.log(
+        //   "anchor: ",
+        //   selection?.anchor,
+        //   "focus: { path: ",
+        //   focusPath,
+        //   "offset: ",
+        //   focusOffset
+        // );
 
-        // console.log("focusPath:", focusPath);
-
-        Transforms.setSelection(editor, {
-          anchor: selection?.anchor,
-          focus: { path: focusPath, offset: focusOffset },
-        });
-
-        insertPuzz(editor, eng, kor);
+        // Transforms.setSelection(editor, {
+        //   anchor: selection?.anchor,
+        //   focus: { path: focusPath, offset: focusOffset },
+        // });
       }}
     >
       <Icon icon="format_Puzzle" size={20} />
@@ -182,7 +206,7 @@ const unwrapPuzzle = (editor: any) => {
   Transforms.unwrapNodes(editor, { match: (n) => n.type === "puzzle" });
 };
 
-const wrapPuzzle = (editor: any, eng: any) => {
+const wrapPuzzle = (editor: any, eng: any, kor?: any) => {
   if (isLinkActive(editor)) {
     unwrapPuzzle(editor);
   }
@@ -192,8 +216,8 @@ const wrapPuzzle = (editor: any, eng: any) => {
   const puzzle = {
     type: "puzzle",
     eng,
-    kor: "",
-    children: isCollapsed ? [{ text: eng }] : [],
+    kor,
+    children: isCollapsed ? [{ text: kor }] : [],
   };
 
   if (isCollapsed) {
