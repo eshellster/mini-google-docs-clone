@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useEffect } from "react";
-import isUrl from "is-url";
 import {
   Slate,
   Editable,
@@ -40,37 +39,22 @@ const Puzzle = () => {
 };
 
 const withPuzzles = (editor: any) => {
-  const { insertData, insertText, isInline } = editor;
+  const { isInline, isVoid } = editor;
 
   editor.isInline = (element: any) => {
     return element.type === "puzzle" ? true : isInline(element);
   };
-
-  editor.insertText = (text: any) => {
-    if (text && isUrl(text)) {
-      wrapPuzzle(editor, text);
-    } else {
-      insertText(text);
-    }
-  };
-
-  editor.insertData = (data: any) => {
-    const text = data.getData("text/plain");
-
-    if (text && isUrl(text)) {
-      wrapPuzzle(editor, text);
-    } else {
-      insertData(data);
-    }
+  editor.isVoid = (element: any) => {
+    return element.type === "puzzle" ? true : isVoid(element);
   };
 
   return editor;
 };
 
 const insertPuzz = (editor: any, eng: any, kor: any) => {
-  if (editor) {
-    wrapPuzzle(editor, eng, kor);
-  }
+  const puzzle = { type: "puzzle", eng, kor, children: [{ text: "" }] };
+  Transforms.insertNodes(editor, puzzle);
+  Transforms.move(editor);
 };
 
 const isLinkActive = (editor: any) => {
@@ -106,6 +90,8 @@ const PuzzleElement = ({ attributes, children, element }: any) => {
         boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
       }}
     >
+      {element.kor}
+      {/* {element.eng} */}
       {children}
     </span>
   );
@@ -121,7 +107,7 @@ const initialValue = [
         type: "puzzle",
         eng: "I am a boy",
         kor: "나는 소년이다",
-        children: [{ text: "나는 소년이다" }],
+        children: [{ text: "" }],
       },
       {
         text: "!",
@@ -171,10 +157,10 @@ const MakePuzzleButton = () => {
 
           const kor = window.prompt(`"${eng}"의 해석`);
           if (!kor) return;
-          //두번 입력방지와 강제로 커서를 위치시킨다.
-          editor.insertText("");
+          //두번 입력방지와 강제로 커서를 위치시킨다. 현재는 필요가 없지만 나중에 활용
+          //   editor.insertText("");
           insertPuzz(editor, eng, kor);
-          console.log("eng, kor: ", eng, kor);
+          //   console.log("eng, kor: ", eng, kor);
 
           setTarget(null);
         }
@@ -183,30 +169,4 @@ const MakePuzzleButton = () => {
       <Icon icon="format_Puzzle" size={20} />
     </Button>
   );
-};
-
-const unwrapPuzzle = (editor: any) => {
-  Transforms.unwrapNodes(editor, { match: (n) => n.type === "puzzle" });
-};
-
-const wrapPuzzle = (editor: any, eng: any, kor?: any) => {
-  if (isLinkActive(editor)) {
-    unwrapPuzzle(editor);
-  }
-
-  const { selection } = editor;
-  const isCollapsed = selection && Range.isCollapsed(selection);
-  const puzzle = {
-    type: "puzzle",
-    eng,
-    kor,
-    children: isCollapsed ? [{ text: kor }] : [],
-  };
-
-  if (isCollapsed) {
-    Transforms.insertNodes(editor, puzzle);
-  } else {
-    Transforms.wrapNodes(editor, puzzle, { split: true });
-    Transforms.collapse(editor, { edge: "end" });
-  }
 };
