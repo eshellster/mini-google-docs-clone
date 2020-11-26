@@ -87,22 +87,22 @@ const MentionExample = () => {
 
         if (selection && Range.isCollapsed(selection)) {
           const [start] = Range.edges(selection);
-          console.log("start: ", start);
+          //   console.log("start: ", start);
 
           const wordBefore = Editor.before(editor, start, { unit: "word" });
-          console.log("wordBefore: ", wordBefore);
+          //   console.log("wordBefore: ", wordBefore);
 
           const before = wordBefore && Editor.before(editor, wordBefore);
-          console.log("before: ", before);
+          //   console.log("before: ", before);
 
           const beforeRange = before && Editor.range(editor, before, start);
-          console.log("beforeRange: ", beforeRange);
+          //   console.log("beforeRange: ", beforeRange);
 
           const beforeText = beforeRange && Editor.string(editor, beforeRange);
-          console.log("beforeText: ", beforeText);
+          //   console.log("beforeText: ", beforeText);
 
           const beforeMatch = beforeText && beforeText.match(/^@(\w+)$/);
-          console.log("beforeMatch: ", beforeMatch);
+          //   console.log("beforeMatch: ", beforeMatch);
 
           const after = Editor.after(editor, start);
           //   console.log("after: ", after);

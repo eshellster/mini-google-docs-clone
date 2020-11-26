@@ -1,6 +1,13 @@
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import isUrl from "is-url";
-import { Slate, Editable, withReact, useSlate } from "slate-react";
+import {
+  Slate,
+  Editable,
+  withReact,
+  useSlate,
+  useSelected,
+  useFocused,
+} from "slate-react";
 import { Node, Transforms, Editor, Range, createEditor } from "slate";
 import { withHistory } from "slate-history";
 
@@ -71,30 +78,37 @@ const isLinkActive = (editor: any) => {
   return !!link;
 };
 
-const Element = ({ attributes, children, element }: any) => {
+const Element = (props: any) => {
+  const { attributes, children, element } = props;
   switch (element.type) {
     case "puzzle":
-      return (
-        <span
-          {...attributes}
-          eng={element.eng}
-          style={{
-            padding: "3px 3px 2px",
-            margin: "0 1px",
-            verticalAlign: "baseline",
-            display: "inline-block",
-            borderRadius: "4px",
-            backgroundColor: "#eee",
-            fontSize: "0.9em",
-            boxShadow: "0 0 0 2px #B4D5FF",
-          }}
-        >
-          {children}
-        </span>
-      );
+      return <PuzzleElement {...props} />;
     default:
       return <p {...attributes}>{children}</p>;
   }
+};
+
+const PuzzleElement = ({ attributes, children, element }: any) => {
+  const selected = useSelected();
+  const focused = useFocused();
+  return (
+    <span
+      {...attributes}
+      contentEditable={false}
+      style={{
+        padding: "3px 3px 2px",
+        margin: "0 1px",
+        verticalAlign: "baseline",
+        display: "inline-block",
+        borderRadius: "4px",
+        backgroundColor: "#eee",
+        fontSize: "0.9em",
+        boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
+      }}
+    >
+      {children}
+    </span>
+  );
 };
 
 const initialValue = [
@@ -128,13 +142,12 @@ export default Puzzle;
 
 const MakePuzzleButton = () => {
   const editor = useSlate();
-  // 선택한 문자열 가져오기
-  //   const selectedText = window.getSelection();
+  // 선택된 문자열의 시작과 끝 지점 값
   const [target, setTarget] = useState<Range | null>();
-  const [korTarget, setKorTarget] = useState<Range | null>();
 
+  // 선택된 에디터를 가져온다.
   const { selection } = editor;
-  console.log("selection", selection?.anchor, selection?.focus);
+  //   console.log("selection", selection?.anchor, selection?.focus);
   //   console.log("eng:", eng);
 
   return (
@@ -142,7 +155,9 @@ const MakePuzzleButton = () => {
       active={isLinkActive(editor)}
       onMouseDown={(event: any) => {
         event.preventDefault();
+        // 선택한 문장을 eng변수에 저장한다.
         const eng = window.getSelection()?.toString();
+        // 커서가 문자를 선택한 상태
         if (selection && !Range.isCollapsed(selection)) {
           const [start, end] = Range.edges(selection);
           console.log("start end Range: ", start, end);
@@ -156,45 +171,13 @@ const MakePuzzleButton = () => {
 
           const kor = window.prompt(`"${eng}"의 해석`);
           if (!kor) return;
-          // 강제로 커서를 위치시킨다.
+          //두번 입력방지와 강제로 커서를 위치시킨다.
           editor.insertText("");
           insertPuzz(editor, eng, kor);
           console.log("eng, kor: ", eng, kor);
 
           setTarget(null);
         }
-
-        // window.getSelection()?.deleteFromDocument();
-
-        // console.log("after - selection:", selection);
-
-        // console.log("length", length);
-
-        // editor.insertText(kor);
-
-        // const anchorOffset = selection?.anchor.offset;
-        // let focusOffset: number = 0;
-        // if (anchorOffset) {
-        //   focusOffset = anchorOffset + length;
-        // }
-
-        // let focusPath: number[] = [];
-        // if (selection?.anchor.path[0] !== undefined) {
-        //   focusPath = selection?.anchor.path;
-        // }
-        // console.log(
-        //   "anchor: ",
-        //   selection?.anchor,
-        //   "focus: { path: ",
-        //   focusPath,
-        //   "offset: ",
-        //   focusOffset
-        // );
-
-        // Transforms.setSelection(editor, {
-        //   anchor: selection?.anchor,
-        //   focus: { path: focusPath, offset: focusOffset },
-        // });
       }}
     >
       <Icon icon="format_Puzzle" size={20} />
