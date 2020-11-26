@@ -156,8 +156,8 @@ const MakePuzzleButton = () => {
 
           const kor = window.prompt(`"${eng}"의 해석`);
           if (!kor) return;
-          //   const length = kor.length;
-          editor.insertText(kor);
+          // 강제로 커서를 위치시킨다.
+          editor.insertText("");
           insertPuzz(editor, eng, kor);
           console.log("eng, kor: ", eng, kor);
 
