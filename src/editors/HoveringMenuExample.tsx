@@ -152,6 +152,12 @@ const initialValue = [
         text:
           "This example shows how you can make a hovering menu appear above your content, which you can use to make text ",
       },
+      {
+        type: "puzzle",
+        eng: "I am a boy",
+        kor: "나는 소년이다",
+        children: [{ text: "" }],
+      },
       { text: "bold", bold: true },
       { text: ", " },
       { text: "italic", italic: true },
