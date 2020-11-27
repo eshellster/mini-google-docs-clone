@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 import MentionExample from "./editors/mentions";
-// import HoveringMenuExample from "./editors/HoveringMenuExample";
+import HoveringMenuExample from "./editors/HoveringMenuExample";
 // import LinkExample from "./editors/Links";
 import Puzzle from "./editors/Puzzle";
 // import RichTextExample from "./editors/Richtext";
@@ -28,10 +28,10 @@ const App = () => {
         <hr style={{ width: "100%", color: "white" }} />
         <SyncingEditor />
         <br /> */}
-        {/* <h2>HoveringMenu Editor</h2>
+        <h2>HoveringMenu Editor</h2>
         <hr style={{ width: "100%", color: "white" }} />
         <HoveringMenuExample />
-        <br /> */}
+        <br />
         {/* <h2>Rich Editor</h2>
         <hr style={{ width: "100%", color: "white" }} />
         <RichTextExample />

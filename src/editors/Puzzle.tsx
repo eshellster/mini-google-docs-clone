@@ -51,15 +51,18 @@ const withPuzzles = (editor: any) => {
   return editor;
 };
 
+// 퍼즐 추가
 const insertPuzz = (editor: any, eng: any, kor: any) => {
   const puzzle = { type: "puzzle", eng, kor, children: [{ text: "" }] };
   Transforms.insertNodes(editor, puzzle);
   Transforms.move(editor);
 };
 
+// puzzle 선택 여부
 const isLinkActive = (editor: any) => {
-  const [link] = Editor.nodes(editor, { match: (n) => n.type === "link" });
-  return !!link;
+  const [puzzle] = Editor.nodes(editor, { match: (n) => n.type === "puzzle" });
+
+  return !!puzzle;
 };
 
 const Element = (props: any) => {
