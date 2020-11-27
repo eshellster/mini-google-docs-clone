@@ -133,19 +133,14 @@ const togglePuzzle = ({ editor, target, setTarget }: any) => {
 
   if (isActive) {
     const [start] = Range.edges(selection);
-    console.log("start", start.path);
     const path = start.path;
-    console.log(editor.children[0].children[1]);
 
-    const org = editor.children[0].children[1].eng;
+    const org = editor.children[path[0]].children[path[1]].eng;
 
     Transforms.delete(editor);
 
     editor.insertText(org);
   } else {
-    //   console.log("selection", selection?.anchor, selection?.focus);
-    //   console.log("eng:", eng);
-
     const eng = window.getSelection()?.toString();
     if (selection && !Range.isCollapsed(selection)) {
       const [start, end] = Range.edges(selection);
