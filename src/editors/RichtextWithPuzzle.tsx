@@ -1,6 +1,13 @@
 import React, { useCallback, useMemo, useState } from "react";
 import isHotkey from "is-hotkey";
-import { Editable, withReact, useSlate, Slate } from "slate-react";
+import {
+  Editable,
+  withReact,
+  useSlate,
+  Slate,
+  useSelected,
+  useFocused,
+} from "slate-react";
 import { Editor, Transforms, createEditor, Node } from "slate";
 import { withHistory } from "slate-history";
 
@@ -20,7 +27,10 @@ const RichText = () => {
   const [value, setValue] = useState<Node[]>(initialValue);
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
-  const editor = useMemo(() => withHistory(withReact(createEditor())), []);
+  const editor = useMemo(
+    () => withQuiz(withHistory(withReact(createEditor()))),
+    []
+  );
 
   return (
     <Slate editor={editor} value={value} onChange={(value) => setValue(value)}>
@@ -97,7 +107,8 @@ const isMarkActive = (editor: Editor, format: any) => {
   return marks ? marks[format] === true : false;
 };
 
-const Element = ({ attributes, children, element }: any) => {
+const Element = (props: any) => {
+  const { attributes, children, element } = props;
   switch (element.type) {
     case "block-quote":
       return <blockquote {...attributes}>{children}</blockquote>;
@@ -111,9 +122,36 @@ const Element = ({ attributes, children, element }: any) => {
       return <li {...attributes}>{children}</li>;
     case "numbered-list":
       return <ol {...attributes}>{children}</ol>;
+    case "puzzle":
+      return <PuzzleQuizElement {...props} />;
     default:
       return <p {...attributes}>{children}</p>;
   }
+};
+
+const PuzzleQuizElement = ({ attributes, children, element }: any) => {
+  const selected = useSelected();
+  const focused = useFocused();
+  return (
+    <span
+      {...attributes}
+      contentEditable={false}
+      style={{
+        padding: "3px 3px 2px",
+        margin: "0 1px",
+        verticalAlign: "baseline",
+        display: "inline-block",
+        borderRadius: "4px",
+        backgroundColor: "#eee",
+        fontSize: "0.9em",
+        boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
+      }}
+    >
+      {element.kor}
+      {/* {element.eng} */}
+      {children}
+    </span>
+  );
 };
 
 const Leaf = ({ attributes, children, leaf }: any) => {
@@ -166,6 +204,20 @@ const MarkButton = ({ format, icon }: any) => {
   );
 };
 
+const withQuiz = (editor: any) => {
+  const { isInline, isVoid } = editor;
+
+  editor.isInline = (element: any) => {
+    return element.type === "puzzle" ? true : isInline(element);
+  };
+
+  editor.isVoid = (element: any) => {
+    return element.type === "puzzle" ? true : isVoid(element);
+  };
+
+  return editor;
+};
+
 const initialValue = [
   {
     type: "paragraph",
@@ -190,6 +242,12 @@ const initialValue = [
       {
         text:
           ", or add a semantically rendered block quote in the middle of the page, like this:",
+      },
+      {
+        type: "puzzle",
+        eng: "I am a boy",
+        kor: "나는 소년이다",
+        children: [{ text: "" }],
       },
     ],
   },
