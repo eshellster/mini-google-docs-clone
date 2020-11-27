@@ -85,6 +85,15 @@ const toggleBlock = (editor: Editor, format: any) => {
   }
 };
 
+const togglePuzzle = (editor: Editor) => {
+  const isActive = isPuzzleActive(editor);
+
+  if (!isActive) {
+    const block = { type: "puzzle", children: [] };
+    Transforms.wrapNodes(editor, block);
+  }
+};
+
 const toggleMark = (editor: Editor, format: string) => {
   const isActive = isMarkActive(editor, format);
 
@@ -150,7 +159,7 @@ const PuzzleQuizElement = ({ attributes, children, element }: any) => {
         verticalAlign: "baseline",
         display: "inline-block",
         borderRadius: "4px",
-        backgroundColor: "#eee",
+        backgroundColor: "#fbe2ff",
         fontSize: "0.9em",
         boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
       }}
@@ -182,7 +191,7 @@ const Leaf = ({ attributes, children, leaf }: any) => {
   return <span {...attributes}>{children}</span>;
 };
 
-const BlockButton = ({ format, icon }: any) => {
+const BlockButton = ({ format, icon }: { format: string; icon: string }) => {
   const editor = useSlate();
   return (
     <Button
@@ -227,6 +236,7 @@ const MarkPuzzleButton = () => {
       active={isPuzzleActive(editor)}
       onMouseDown={(event: any) => {
         event.preventDefault();
+        togglePuzzle(editor);
         // 선택한 문장을 eng변수에 저장한다.
         const eng = window.getSelection()?.toString();
         // 커서가 문자를 선택한 상태

@@ -22,7 +22,7 @@ const Puzzle = () => {
   );
 
   useEffect(() => {
-    console.log("value:", value);
+    // console.log("value:", value);
   }, [value]);
 
   return (
@@ -55,13 +55,11 @@ const withPuzzles = (editor: any) => {
 const insertPuzz = (editor: any, eng: any, kor: any) => {
   const puzzle = { type: "puzzle", eng, kor, children: [{ text: "" }] };
   Transforms.insertNodes(editor, puzzle);
-  Transforms.move(editor);
 };
 
 // puzzle 선택 여부
-const isLinkActive = (editor: any) => {
+const isPuzzleActive = (editor: any) => {
   const [puzzle] = Editor.nodes(editor, { match: (n) => n.type === "puzzle" });
-
   return !!puzzle;
 };
 
@@ -129,44 +127,65 @@ const initialValue = [
 
 export default Puzzle;
 
+const togglePuzzle = ({ editor, target, setTarget }: any) => {
+  const isActive = isPuzzleActive(editor);
+  const { selection } = editor;
+
+  if (isActive) {
+    const [start] = Range.edges(selection);
+    console.log("start", start.path);
+    const path = start.path;
+    console.log(editor.children[0].children[1]);
+
+    const org = editor.children[0].children[1].eng;
+
+    Transforms.delete(editor);
+
+    editor.insertText(org);
+  } else {
+    //   console.log("selection", selection?.anchor, selection?.focus);
+    //   console.log("eng:", eng);
+
+    const eng = window.getSelection()?.toString();
+    if (selection && !Range.isCollapsed(selection)) {
+      const [start, end] = Range.edges(selection);
+      // console.log("start end Range: ", start, end);
+      const orgRange = start && end && Editor.range(editor, start, end);
+
+      setTarget(orgRange);
+      if (target) {
+        Transforms.select(editor, target);
+      }
+
+      const kor = window.prompt(`"${eng}"의 해석`);
+      if (!kor) return;
+      //두번 입력방지와 강제로 커서를 위치시킨다. 현재는 필요가 없지만 나중에 활용
+      //   editor.insertText("");
+      insertPuzz(editor, eng, kor);
+      //   console.log("eng, kor: ", eng, kor);
+
+      setTarget(null);
+    }
+  }
+};
+
 const MakePuzzleButton = () => {
   const editor = useSlate();
   // 선택된 문자열의 시작과 끝 지점 값
   const [target, setTarget] = useState<Range | null>();
 
   // 선택된 에디터를 가져온다.
-  const { selection } = editor;
-  //   console.log("selection", selection?.anchor, selection?.focus);
-  //   console.log("eng:", eng);
+
+  // 커서가 문자를 선택한 상태
 
   return (
     <Button
-      active={isLinkActive(editor)}
+      active={isPuzzleActive(editor)}
       onMouseDown={(event: any) => {
         event.preventDefault();
+
+        togglePuzzle({ editor, target, setTarget });
         // 선택한 문장을 eng변수에 저장한다.
-        const eng = window.getSelection()?.toString();
-        // 커서가 문자를 선택한 상태
-        if (selection && !Range.isCollapsed(selection)) {
-          const [start, end] = Range.edges(selection);
-          console.log("start end Range: ", start, end);
-
-          const orgRange = start && end && Editor.range(editor, start, end);
-
-          setTarget(orgRange);
-          if (target) {
-            Transforms.select(editor, target);
-          }
-
-          const kor = window.prompt(`"${eng}"의 해석`);
-          if (!kor) return;
-          //두번 입력방지와 강제로 커서를 위치시킨다. 현재는 필요가 없지만 나중에 활용
-          //   editor.insertText("");
-          insertPuzz(editor, eng, kor);
-          //   console.log("eng, kor: ", eng, kor);
-
-          setTarget(null);
-        }
       }}
     >
       <Icon icon="format_Puzzle" size={20} />
