@@ -84,7 +84,6 @@ const PuzzleElement = ({ attributes, children, element }: any) => {
         padding: "3px 3px 2px",
         margin: "0 1px",
         verticalAlign: "baseline",
-        display: "inline-block",
         borderRadius: "4px",
         backgroundColor: "#eee",
         fontSize: "0.9em",
