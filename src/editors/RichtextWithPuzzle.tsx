@@ -28,7 +28,7 @@ const RichText = () => {
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
   const editor = useMemo(
-    () => withQuiz(withHistory(withReact(createEditor()))),
+    () => withPuzz(withHistory(withReact(createEditor()))),
     []
   );
 
@@ -39,7 +39,7 @@ const RichText = () => {
         <MarkButton format="italic" icon="format_italic" />
         <MarkButton format="underline" icon="format_Underlined" />
         <MarkButton format="code" icon="code" />
-        <MarkPuzzleButton />
+        <MakePuzzleButton />
         <BlockButton format="heading-one" icon="looks_one" />
         <BlockButton format="heading-two" icon="looks_two" />
         <BlockButton format="block-quote" icon="format_quote" />
@@ -85,15 +85,6 @@ const toggleBlock = (editor: Editor, format: any) => {
   }
 };
 
-const togglePuzzle = (editor: Editor) => {
-  const isActive = isPuzzleActive(editor);
-
-  if (!isActive) {
-    const block = { type: "puzzle", children: [] };
-    Transforms.wrapNodes(editor, block);
-  }
-};
-
 const toggleMark = (editor: Editor, format: string) => {
   const isActive = isMarkActive(editor, format);
 
@@ -110,13 +101,6 @@ const isBlockActive = (editor: Editor, format: any) => {
   });
 
   return !!match;
-};
-
-// puzzle 선택 여부
-const isPuzzleActive = (editor: any) => {
-  const [puzzle] = Editor.nodes(editor, { match: (n) => n.type === "puzzle" });
-
-  return !!puzzle;
 };
 
 const isMarkActive = (editor: Editor, format: any) => {
@@ -140,13 +124,13 @@ const Element = (props: any) => {
     case "numbered-list":
       return <ol {...attributes}>{children}</ol>;
     case "puzzle":
-      return <PuzzleQuizElement {...props} />;
+      return <PuzzleElement {...props} />;
     default:
       return <p {...attributes}>{children}</p>;
   }
 };
 
-const PuzzleQuizElement = ({ attributes, children, element }: any) => {
+const PuzzleElement = ({ attributes, children, element }: any) => {
   const selected = useSelected();
   const focused = useFocused();
   return (
@@ -157,15 +141,14 @@ const PuzzleQuizElement = ({ attributes, children, element }: any) => {
         padding: "3px 3px 2px",
         margin: "0 1px",
         verticalAlign: "baseline",
-        display: "inline-block",
         borderRadius: "4px",
-        backgroundColor: "#fbe2ff",
+        backgroundColor: "#eee",
         fontSize: "0.9em",
         boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
       }}
     >
-      {element.kor}
-      {/* {element.eng} */}
+      {element.guide}
+      {/* {element.answer} */}
       {children}
     </span>
   );
@@ -221,44 +204,60 @@ const MarkButton = ({ format, icon }: any) => {
   );
 };
 
-const MarkPuzzleButton = () => {
+const togglePuzzle = ({ editor, target, setTarget }: any) => {
+  const isActive = isPuzzleActive(editor);
+  const { selection } = editor;
+
+  if (isActive) {
+    const [start] = Range.edges(selection);
+    const path = start.path;
+
+    const org = editor.children[path[0]].children[path[1]].answer;
+
+    Transforms.delete(editor);
+
+    editor.insertText(org);
+  } else {
+    const answer = window.getSelection()?.toString();
+    if (selection && !Range.isCollapsed(selection)) {
+      const [start, end] = Range.edges(selection);
+      // console.log("start end Range: ", start, end);
+      const orgRange = start && end && Editor.range(editor, start, end);
+
+      setTarget(orgRange);
+      if (target) {
+        Transforms.select(editor, target);
+      }
+
+      const guide = window.prompt(`"${answer}"의 해석`);
+      if (!guide) return;
+      //두번 입력방지와 강제로 커서를 위치시킨다. 현재는 필요가 없지만 나중에 활용
+      //   editor.insertText("");
+      insertPuzz(editor, answer, guide);
+      //   console.log("answer, guide: ", answer, guide);
+
+      setTarget(null);
+    }
+  }
+};
+
+const MakePuzzleButton = () => {
   const editor = useSlate();
   // 선택된 문자열의 시작과 끝 지점 값
   const [target, setTarget] = useState<Range | null>();
 
   // 선택된 에디터를 가져온다.
-  const { selection } = editor;
-  //   console.log("selection", selection?.anchor, selection?.focus);
-  //   console.log("eng:", eng);
+
+  // 커서가 문자를 선택한 상태
 
   return (
     <Button
       active={isPuzzleActive(editor)}
       onMouseDown={(event: any) => {
         event.preventDefault();
-        togglePuzzle(editor);
-        // 선택한 문장을 eng변수에 저장한다.
-        const eng = window.getSelection()?.toString();
-        // 커서가 문자를 선택한 상태
-        if (selection && !Range.isCollapsed(selection)) {
-          const [start, end] = Range.edges(selection);
 
-          const orgRange = start && end && Editor.range(editor, start, end);
-
-          setTarget(orgRange);
-          if (target) {
-            Transforms.select(editor, target);
-          }
-
-          const kor = window.prompt(`"${eng}"의 해석`);
-          if (!kor) return;
-          //두번 입력방지와 강제로 커서를 위치시킨다. 현재는 필요가 없지만 나중에 활용
-          //   editor.insertText("");
-          insertPuzz(editor, eng, kor);
-          //   console.log("eng, kor: ", eng, kor);
-
-          setTarget(null);
-        }
+        togglePuzzle({ editor, target, setTarget });
+        // 선택한 문장을 answer변수에 저장한다.
       }}
     >
       <Icon icon="format_Puzzle" size={20} />
@@ -266,7 +265,7 @@ const MarkPuzzleButton = () => {
   );
 };
 
-const withQuiz = (editor: any) => {
+const withPuzz = (editor: any) => {
   const { isInline, isVoid } = editor;
 
   editor.isInline = (element: any) => {
@@ -280,11 +279,15 @@ const withQuiz = (editor: any) => {
   return editor;
 };
 
-// 퍼즐 추가
-const insertPuzz = (editor: any, eng: any, kor: any) => {
-  const puzzle = { type: "puzzle", eng, kor, children: [{ text: "" }] };
+const insertPuzz = (editor: any, answer: any, guide: any) => {
+  const puzzle = { type: "puzzle", answer, guide, children: [{ text: "" }] };
   Transforms.insertNodes(editor, puzzle);
-  Transforms.move(editor);
+};
+
+// puzzle 선택 여부
+const isPuzzleActive = (editor: any) => {
+  const [puzzle] = Editor.nodes(editor, { match: (n) => n.type === "puzzle" });
+  return !!puzzle;
 };
 
 const initialValue = [
@@ -314,8 +317,8 @@ const initialValue = [
       },
       {
         type: "puzzle",
-        eng: "I am a boy",
-        kor: "나는 소년이다",
+        answer: "I am a boy",
+        guide: "나는 소년이다",
         children: [{ text: "" }],
       },
     ],
