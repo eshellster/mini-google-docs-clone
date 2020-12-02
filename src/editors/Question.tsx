@@ -17,7 +17,7 @@ const Question = () => {
   const [value, setValue] = useState<Node[]>(initialValue);
 
   const editor = useMemo(
-    () => withPuzzles(withHistory(withReact(createEditor()))),
+    () => withQuest(withHistory(withReact(createEditor()))),
     []
   );
 
@@ -31,6 +31,7 @@ const Question = () => {
         <MakePuzzleButton />
       </Toolbar>
       <Editable
+        className="notranslate"
         renderElement={(props) => <Element {...props} />}
         placeholder="Enter some text..."
       />
@@ -38,14 +39,18 @@ const Question = () => {
   );
 };
 
-const withPuzzles = (editor: any) => {
+const withQuest = (editor: any) => {
   const { isInline, isVoid } = editor;
 
   editor.isInline = (element: any) => {
-    return element.type === "puzzle" ? true : isInline(element);
+    return element.type === "puzzle" || element.type === "question"
+      ? true
+      : isInline(element);
   };
   editor.isVoid = (element: any) => {
-    return element.type === "puzzle" ? true : isVoid(element);
+    return element.type === "puzzle" || element.type === "question"
+      ? true
+      : isVoid(element);
   };
 
   return editor;

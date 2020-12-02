@@ -27,10 +27,11 @@ const Puzzle = () => {
 
   return (
     <Slate editor={editor} value={value} onChange={(value) => setValue(value)}>
-      <Toolbar>
+      <Toolbar className="toolbar">
         <MakePuzzleButton />
       </Toolbar>
       <Editable
+        className="notranslate"
         renderElement={(props) => <Element {...props} />}
         placeholder="Enter some text..."
       />

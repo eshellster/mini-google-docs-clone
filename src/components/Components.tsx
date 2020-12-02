@@ -133,5 +133,5 @@ export const Toolbar = React.forwardRef(
   (
     { className, ...props }: PropsWithChildren<BaseProps>,
     ref: Ref<HTMLDivElement>
-  ) => <Menu {...props} ref={ref} className="toolbar" />
+  ) => <Menu {...props} ref={ref} className={className} />
 );
