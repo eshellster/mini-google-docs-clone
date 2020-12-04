@@ -28,7 +28,7 @@ const RichText = () => {
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
   const editor = useMemo(
-    () => withPuzz(withHistory(withReact(createEditor()))),
+    () => withQuest(withHistory(withReact(createEditor()))),
     []
   );
 
@@ -39,7 +39,8 @@ const RichText = () => {
         <MarkButton format="italic" icon="format_italic" />
         <MarkButton format="underline" icon="format_Underlined" />
         <MarkButton format="code" icon="code" />
-        <MakePuzzleButton />
+        <InlineBlockButton format="puzzle" icon="mix" />
+        <InlineBlockButton format="question" icon="format_question" />
         <BlockButton format="heading-one" icon="looks_one" />
         <BlockButton format="heading-two" icon="looks_two" />
         <BlockButton format="block-quote" icon="format_quote" />
@@ -125,6 +126,8 @@ const Element = (props: any) => {
       return <ol {...attributes}>{children}</ol>;
     case "puzzle":
       return <PuzzleElement {...props} />;
+    case "question":
+      return <QuestionElement {...props} />;
     default:
       return <p {...attributes}>{children}</p>;
   }
@@ -150,6 +153,32 @@ const PuzzleElement = ({ attributes, children, element }: any) => {
     >
       {element.guide}
       {/* {element.answer} */}
+      {children}
+    </span>
+  );
+};
+
+const QuestionElement = ({ attributes, children, element }: any) => {
+  const selected = useSelected();
+  const focused = useFocused();
+  const emptyText = " ";
+  return (
+    <span
+      {...attributes}
+      contentEditable={false}
+      style={{
+        textAlign: "center",
+        minWidth: "80px",
+        padding: "3px 3px 2px",
+        margin: "0 1px",
+        verticalAlign: "baseline",
+        border: "solid 4px #007AFF",
+        display: "inline-block",
+        fontSize: "0.9em",
+        boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
+      }}
+    >
+      {emptyText}
       {children}
     </span>
   );
@@ -205,47 +234,44 @@ const MarkButton = ({ format, icon }: any) => {
   );
 };
 
-const togglePuzzle = ({ editor, target, setTarget }: any) => {
-  const isActive = isPuzzleActive(editor);
+const MakeQuest = ({ editor, target, setTarget, format }: any) => {
   const { selection } = editor;
+  console.log(selection);
+  const originalText = window.getSelection()?.toString();
+  const answer = originalText;
+  if (selection && !Range.isCollapsed(selection)) {
+    const [start, end] = Range.edges(selection);
+    // console.log("start end Range: ", start, end);
+    const orgRange = start && end && Editor.range(editor, start, end);
 
-  if (isActive) {
-    const [start] = Range.edges(selection);
-    const path = start.path;
-
-    const org = editor.children[path[0]].children[path[1]].answer;
-
-    Transforms.delete(editor);
-
-    editor.insertText(org);
-  } else {
-    const answer = window.getSelection()?.toString();
-    if (selection && !Range.isCollapsed(selection)) {
-      const [start, end] = Range.edges(selection);
-      // console.log("start end Range: ", start, end);
-      const orgRange = start && end && Editor.range(editor, start, end);
-
-      setTarget(orgRange);
-      if (target) {
-        Transforms.select(editor, target);
-      }
-
-      const guide = window.prompt(`"${answer}"의 해석`);
-      if (!guide) return;
-      //두번 입력방지와 강제로 커서를 위치시킨다. 현재는 필요가 없지만 나중에 활용
-      //   editor.insertText("");
-      insertPuzz(editor, answer, guide);
-      //   console.log("answer, guide: ", answer, guide);
-
-      setTarget(null);
+    setTarget(orgRange);
+    if (target) {
+      Transforms.select(editor, target);
     }
+
+    let guide = null;
+    if (format === "puzzle") {
+      guide = window.prompt(`"${originalText}"의 해석`);
+      if (!guide) return;
+    }
+
+    insertQuest(editor, answer, guide, format);
+
+    //두번 입력방지와 강제로 커서를 위치시킨다. 현재는 필요가 없지만 나중에 활용
+    //   editor.insertText("");
+
+    //   console.log("answer, guide: ", answer, guide);
+
+    setTarget(null);
   }
 };
 
-const MakePuzzleButton = () => {
+const InlineBlockButton = ({ format, icon }: any) => {
   const editor = useSlate();
   // 선택된 문자열의 시작과 끝 지점 값
   const [target, setTarget] = useState<Range | null>();
+
+  const isActive = isBlockActive(editor, format);
 
   // 선택된 에디터를 가져온다.
 
@@ -253,55 +279,87 @@ const MakePuzzleButton = () => {
 
   return (
     <Button
-      active={isPuzzleActive(editor)}
+      active={isBlockActive(editor, format)}
       onMouseDown={(event: any) => {
         event.preventDefault();
-
-        togglePuzzle({ editor, target, setTarget });
+        //퍼즐이 포함 되어있으면 작동 안함
+        if (!isActive) {
+          MakeQuest({ editor, target, setTarget, format });
+        }
         // 선택한 문장을 answer변수에 저장한다.
       }}
     >
-      <Icon icon="format_Puzzle" size={20} />
+      <Icon icon={icon} size={20} color={isActive ? "gray" : "black"} />
     </Button>
   );
 };
 
-const withPuzz = (editor: any) => {
+// const MakeQuestionButton = (format) => {
+//   const editor = useSlate();
+//   // 선택된 문자열의 시작과 끝 지점 값
+//   const [target, setTarget] = useState<Range | null>();
+
+//   const isActive = isQuestActive(editor);
+
+//   // 선택된 에디터를 가져온다.
+
+//   // 커서가 문자를 선택한 상태
+
+//   return (
+//     <Button
+//       active={isBlockActive(editor,format)}
+//       onMouseDown={(event: any) => {
+//         event.preventDefault();
+//         //퍼즐이 포함 되어있으면 작동 안함
+//         if (!isActive) {
+//           MakePuzzle({ editor, target, setTarget });
+//         }
+//         // 선택한 문장을 answer변수에 저장한다.
+//       }}
+//     >
+//       <Icon
+//         icon="format_Puzzle"
+//         size={20}
+//         color={isActive ? "gray" : "black"}
+//       />
+//     </Button>
+//   );
+// };
+
+const withQuest = (editor: any) => {
   const { isInline, isVoid } = editor;
 
   editor.isInline = (element: any) => {
-    return element.type === "puzzle" ? true : isInline(element);
+    return element.type === "puzzle" || element.type === "question"
+      ? true
+      : isInline(element);
   };
-
   editor.isVoid = (element: any) => {
-    return element.type === "puzzle" ? true : isVoid(element);
+    return element.type === "puzzle" || element.type === "question"
+      ? true
+      : isVoid(element);
   };
 
   return editor;
 };
 
-const insertPuzz = (editor: any, answer: any, guide: any) => {
-  const puzzle = { type: "puzzle", answer, guide, children: [{ text: "" }] };
-  Transforms.insertNodes(editor, puzzle);
-};
-
-// puzzle 선택 여부
-const isPuzzleActive = (editor: any) => {
-  const [puzzle] = Editor.nodes(editor, { match: (n) => n.type === "puzzle" });
-  return !!puzzle;
+const insertQuest = (editor: any, answer: any, guide: any, format: any) => {
+  const quest = { type: format, answer, guide, children: [{ text: "" }] };
+  Transforms.insertNodes(editor, quest);
 };
 
 const initialValue = [
   {
     type: "paragraph",
+    children: [{ text: "Unit 02 A Nation of Immigrants" }],
+  },
+  {
+    type: "paragraph",
     children: [
-      { text: "This is editable " },
-      { text: "rich", bold: true },
-      { text: " text, " },
-      { text: "much", italic: true },
-      { text: " better than a " },
-      { text: "<textarea>", code: true },
-      { text: "!" },
+      {
+        text:
+          "The United States is a nation of immigrants. People immigrate to the U.S. from all over the world.",
+      },
     ],
   },
   {
@@ -309,28 +367,36 @@ const initialValue = [
     children: [
       {
         text:
-          "Since it's rich text, you can do things like turn a selection of text ",
-      },
-      { text: "bold", bold: true },
-      {
-        text:
-          ", or add a semantically rendered block quote in the middle of the page, like this:",
-      },
-      {
-        type: "puzzle",
-        answer: "I am a boy",
-        guide: "나는 소년이다",
-        children: [{ text: "" }],
+          'In the early 1900s, many immigrants came from Europe. They sailed on ships across the Atlantic Ocean. They often arrived at Ellis Island in New York Harbor. In New York Harbor, the Statue of Liberty greeted them. For many immigrants, “Lady Liberty" was the first thing they saw in America. It was a symbol of freedom to these immigrants.',
       },
     ],
   },
   {
-    type: "block-quote",
-    children: [{ text: "A wise quote." }],
+    type: "paragraph",
+    children: [
+      {
+        text:
+          "In the 1960s, many immigrants came from Asia. They often arrived at Angel Island in San Francisco Bay.",
+      },
+    ],
   },
   {
     type: "paragraph",
-    children: [{ text: "Try it out for yourself!" }],
+    children: [
+      {
+        text:
+          "Moving to another country is not always easy. Immigrants have to get used to their new homes. They often have to start a completely new way of life. They have to learn about a new culture and find new jobs and homes. They need to learn a new language as well.",
+      },
+    ],
+  },
+  {
+    type: "paragraph",
+    children: [
+      {
+        text:
+          "Some immigrants live with the same ethnic group. Ethnic neighbors can help them get used to their new country.",
+      },
+    ],
   },
 ];
 
