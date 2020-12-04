@@ -67,6 +67,23 @@ const RichText = () => {
   );
 };
 
+const withQuest = (editor: any) => {
+  const { isInline, isVoid } = editor;
+
+  editor.isInline = (element: any) => {
+    return element.type === "puzzle" || element.type === "question"
+      ? true
+      : isInline(element);
+  };
+  editor.isVoid = (element: any) => {
+    return element.type === "puzzle" || element.type === "question"
+      ? true
+      : isVoid(element);
+  };
+
+  return editor;
+};
+
 const toggleBlock = (editor: Editor, format: any) => {
   const isActive = isBlockActive(editor, format);
   const isList = LIST_TYPES.includes(format);
@@ -97,11 +114,17 @@ const toggleMark = (editor: Editor, format: string) => {
 };
 
 const isBlockActive = (editor: Editor, format: any) => {
-  const [match] = Editor.nodes(editor, {
-    match: (n) => n.type === format,
-  });
-
-  return !!match;
+  if (format === "puzzle" || format === "question") {
+    const [match] = Editor.nodes(editor, {
+      match: (n) => n.type === "puzzle" || n.type === "question",
+    });
+    return !!match;
+  } else {
+    const [match] = Editor.nodes(editor, {
+      match: (n) => n.type === format,
+    });
+    return !!match;
+  }
 };
 
 const isMarkActive = (editor: Editor, format: any) => {
@@ -147,6 +170,7 @@ const PuzzleElement = ({ attributes, children, element }: any) => {
         borderRadius: "4px",
         backgroundColor: "#007AFF",
         fontSize: "0.9em",
+        fontWeight: "600",
         color: "white",
         boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
       }}
@@ -231,6 +255,11 @@ const MarkButton = ({ format, icon }: any) => {
       <Icon icon={icon} size={20} />
     </Button>
   );
+};
+
+const insertQuest = (editor: any, answer: any, guide: any, format: any) => {
+  const quest = { type: format, answer, guide, children: [{ text: "" }] };
+  Transforms.insertNodes(editor, quest);
 };
 
 const MakeQuest = ({ editor, target, setTarget, format }: any) => {
@@ -324,28 +353,6 @@ const InlineBlockButton = ({ format, icon }: any) => {
 //     </Button>
 //   );
 // };
-
-const withQuest = (editor: any) => {
-  const { isInline, isVoid } = editor;
-
-  editor.isInline = (element: any) => {
-    return element.type === "puzzle" || element.type === "question"
-      ? true
-      : isInline(element);
-  };
-  editor.isVoid = (element: any) => {
-    return element.type === "puzzle" || element.type === "question"
-      ? true
-      : isVoid(element);
-  };
-
-  return editor;
-};
-
-const insertQuest = (editor: any, answer: any, guide: any, format: any) => {
-  const quest = { type: format, answer, guide, children: [{ text: "" }] };
-  Transforms.insertNodes(editor, quest);
-};
 
 const initialValue = [
   {
