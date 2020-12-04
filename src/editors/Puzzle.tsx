@@ -198,7 +198,6 @@ const MakePuzzleButton = () => {
   // 선택된 문자열의 시작과 끝 지점 값
   const [target, setTarget] = useState<Range | null>();
 
-  console.log(isPuzzleActive(editor));
   const isActive = isPuzzleActive(editor);
 
   // 선택된 에디터를 가져온다.

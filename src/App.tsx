@@ -1,13 +1,14 @@
 import React from "react";
 import "./App.css";
-import { FormInput } from "./editors/FormInput";
+// import { ModalExamele } from "./components/ModalExample";
+// import { FormInput } from "./editors/FormInput";
 // import { CreatePortal } from "./components/CreatePortal";
 // import MentionExample from "./editors/mentions";
 // import HoveringMenuExample from "./editors/HoveringMenuExample";
 // import LinkExample from "./editors/Links";
-import Puzzle from "./editors/Puzzle";
+// import Puzzle from "./editors/Puzzle";
 // import Question from "./editors/Question";
-// import RichText from "./editors/RichtextWithPuzzle";
+import RichText from "./editors/RichtextWithPuzzle";
 // import RichTextExample from "./editors/Richtext";
 // import { SyncingEditor } from "./editors/SyncingEditor";
 
@@ -15,12 +16,16 @@ const App = () => {
   return (
     <div className="App">
       <div className="App-header">
+        {/* <br />
+        <h2>ModalExample</h2>
+        <hr style={{ width: "100%", color: "white" }} />
+        <ModalExamele />
         <br />
         <h2>CreatePortal</h2>
         <hr style={{ width: "100%", color: "white" }} />
         <FormInput />
 
-        <br />
+        <br /> */}
         {/* <br />
         <h2>Mention</h2>
         <hr style={{ width: "100%", color: "white" }} />
@@ -34,10 +39,10 @@ const App = () => {
         <hr style={{ width: "100%", color: "white" }} />
         <Question />
         <br /> */}
-        <h2>Puzzle</h2>
+        {/* <h2>Puzzle</h2>
         <hr style={{ width: "100%", color: "white" }} />
         <Puzzle />
-        <br />
+        <br /> */}
         {/* <h2>Local Saved Editor</h2>
         <hr style={{ width: "100%", color: "white" }} />
         <SyncingEditor />
@@ -46,10 +51,10 @@ const App = () => {
         <hr style={{ width: "100%", color: "white" }} />
         <HoveringMenuExample />
         <br /> */}
-        {/* <h2>Rich Editor</h2>
+        <h2>Rich Editor</h2>
         <hr style={{ width: "100%", color: "white" }} />
         <RichText />
-        <hr style={{ width: "100%", color: "white" }} /> */}
+        <hr style={{ width: "100%", color: "white" }} />
       </div>
     </div>
   );

@@ -125,6 +125,13 @@ export const Menu = React.forwardRef(
   ) => <div {...props} ref={ref} />
 );
 
+export const InputModal = React.forwardRef(
+  (
+    { className, ...props }: PropsWithChildren<BaseProps>,
+    ref: Ref<HTMLDivElement>
+  ) => <div {...props} ref={ref} className="inputModal" />
+);
+
 export const Portal = ({ children }: any) => {
   return ReactDOM.createPortal(children, document.body);
 };

@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Portal } from "../components/Components";
+import { InputModal, Portal } from "../components/Components";
 
 export const FormInput = () => {
   const parentRef = useRef<HTMLDivElement>(null);
@@ -8,7 +8,6 @@ export const FormInput = () => {
     const el = ref.current;
     //   const domRange = ReactEditor.toDOMRange(editor, target);
     const rect = parentRef.current?.getBoundingClientRect();
-    console.log(rect);
 
     if (el) {
       if (rect) {
@@ -18,37 +17,44 @@ export const FormInput = () => {
         }px`;
       }
     }
-    console.log(rect);
   };
 
   return (
     <div ref={parentRef}>
       <Portal>
-        <div
+        <InputModal
           ref={ref}
           style={{
             top: "-9999px",
             left: "-9999px",
             position: "absolute",
             zIndex: 1,
-            padding: "3px",
-            background: "white",
+            width: "50%",
+            padding: "25px",
+            backgroundImage: "linear-gradient(to right, #ff512f, #dd2476)",
             borderRadius: "4px",
             boxShadow: "0 1px 5px rgba(0,0,0,.2)",
           }}
         >
-          <div>
+          <h1 style={{ color: "white" }}>영어문장 퍼즐생성</h1>
+          <div className="input-block">
             <label>원본</label>
             <textarea />
           </div>
 
-          <div>
+          <div className="input-block">
             <label>해석</label>
             <textarea />
           </div>
-          <button>취소</button>
-          <button>확인</button>
-        </div>
+          <div style={{ display: "flex" }}>
+            <button className="square-button" style={{ marginRight: "10px" }}>
+              취소
+            </button>
+            <button className="square-button" style={{ marginLeft: "10px" }}>
+              확인
+            </button>
+          </div>
+        </InputModal>
       </Portal>
       <button onClick={onClickHandle}>test</button>
     </div>
