@@ -169,12 +169,11 @@ const QuestionElement = ({ attributes, children, element }: any) => {
       style={{
         textAlign: "center",
         minWidth: "80px",
-        padding: "3px 3px 2px",
         margin: "0 1px",
         verticalAlign: "baseline",
         border: "solid 4px #007AFF",
         display: "inline-block",
-        fontSize: "0.9em",
+        fontSize: "0.6em",
         boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
       }}
     >
@@ -350,8 +349,11 @@ const insertQuest = (editor: any, answer: any, guide: any, format: any) => {
 
 const initialValue = [
   {
-    type: "paragraph",
-    children: [{ text: "Unit 02 A Nation of Immigrants" }],
+    type: "heading-one",
+    children: [
+      { text: "Unit 02", code: true },
+      { text: " A Nation of Immigrants" },
+    ],
   },
   {
     type: "paragraph",

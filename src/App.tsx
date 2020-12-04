@@ -7,7 +7,7 @@ import "./App.css";
 // import HoveringMenuExample from "./editors/HoveringMenuExample";
 // import LinkExample from "./editors/Links";
 // import Puzzle from "./editors/Puzzle";
-import Question from "./editors/Question";
+// import Question from "./editors/Question";
 import RichText from "./editors/RichtextWithPuzzleHoveringMenu";
 // import RichTextExample from "./editors/Richtext";
 // import { SyncingEditor } from "./editors/SyncingEditor";
@@ -35,10 +35,10 @@ const App = () => {
         <hr style={{ width: "100%", color: "white" }} />
         <LinkExample />
         <br /> */}
-        <h2>Question</h2>
+        {/* <h2>Question</h2>
         <hr style={{ width: "100%", color: "white" }} />
         <Question />
-        <br />
+        <br /> */}
         {/* <h2>Puzzle</h2>
         <hr style={{ width: "100%", color: "white" }} />
         <Puzzle />
