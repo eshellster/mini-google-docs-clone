@@ -128,9 +128,16 @@ const toggleMark = (editor: Editor, format: string) => {
 };
 
 const isBlockActive = (editor: Editor, format: any) => {
-  if (format === "puzzle" || format === "question") {
+  if (
+    format === "puzzle" ||
+    format === "question" ||
+    format === "question-mc"
+  ) {
     const [match] = Editor.nodes(editor, {
-      match: (n) => n.type === "puzzle" || n.type === "question",
+      match: (n) =>
+        n.type === "puzzle" ||
+        n.type === "question" ||
+        n.type === "question-mc",
     });
     return !!match;
   } else {
