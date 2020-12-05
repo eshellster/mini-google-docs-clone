@@ -631,13 +631,13 @@
         "isMulticolor": false,
         "isMulticolor2": false,
         "grid": 0,
-        "tags": ["format_question_mutiple_choice"]
+        "tags": ["format_question_multiple_choice"]
       },
       "attrs": [{}],
       "properties": {
         "order": 150,
         "id": 7,
-        "name": "format_question_mutiple_choice",
+        "name": "format_question_multiple_choice",
         "prevSize": 32,
         "code": 59675
       },

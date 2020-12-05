@@ -25,6 +25,7 @@ const LIST_TYPES = ["numbered-list", "bulleted-list"];
 
 const RichText = () => {
   const [value, setValue] = useState<Node[]>(initialValue);
+  const [editable, setEditable] = useState(true);
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
   const editor = useMemo(
@@ -34,20 +35,38 @@ const RichText = () => {
 
   return (
     <Slate editor={editor} value={value} onChange={(value) => setValue(value)}>
-      <Toolbar>
-        <MarkButton format="bold" icon="format_Bold" />
-        <MarkButton format="italic" icon="format_italic" />
-        <MarkButton format="underline" icon="format_Underlined" />
-        <MarkButton format="code" icon="code" />
-        <InlineBlockButton format="puzzle" icon="mix" />
-        <InlineBlockButton format="question" icon="format_question" />
-        <BlockButton format="heading-one" icon="looks_one" />
-        <BlockButton format="heading-two" icon="looks_two" />
-        <BlockButton format="block-quote" icon="format_quote" />
-        <BlockButton format="numbered-list" icon="format_list_numbered" />
-        <BlockButton format="bulleted-list" icon="format_list_bulleted" />
+      <Toolbar className="toolbar">
+        <EditButton
+          editable={editable}
+          setEditable={setEditable}
+          icon="edynote"
+        />
+        {editable ? (
+          <div>
+            <MarkButton format="bold" icon="format_Bold" />
+            <MarkButton format="italic" icon="format_italic" />
+            <MarkButton format="underline" icon="format_underlined" />
+            <MarkButton format="code" icon="code" />
+            <InlineBlockButton format="puzzle" icon="mix" />
+            <InlineBlockButton format="question" icon="format_question" />
+            <InlineBlockButton
+              format="question-mc"
+              icon="format_question_multiple_choice"
+            />
+            <BlockButton format="heading-one" icon="looks_one" />
+            <BlockButton format="heading-two" icon="looks_two" />
+            <BlockButton format="block-quote" icon="format_quote" />
+            <BlockButton format="numbered-list" icon="format_list_numbered" />
+            <BlockButton format="bulleted-list" icon="format_list_bulleted" />
+          </div>
+        ) : null}
       </Toolbar>
       <Editable
+        style={{
+          border: editable ? "dotted 1px gray" : "dotted 1px white",
+          padding: "0 10px 2px 10px",
+        }}
+        readOnly={!editable}
         renderElement={renderElement}
         renderLeaf={renderLeaf}
         placeholder="Enter some rich text…"
@@ -71,12 +90,16 @@ const withQuest = (editor: any) => {
   const { isInline, isVoid } = editor;
 
   editor.isInline = (element: any) => {
-    return element.type === "puzzle" || element.type === "question"
+    return element.type === "puzzle" ||
+      element.type === "question" ||
+      element.type === "question-mc"
       ? true
       : isInline(element);
   };
   editor.isVoid = (element: any) => {
-    return element.type === "puzzle" || element.type === "question"
+    return element.type === "puzzle" ||
+      element.type === "question" ||
+      element.type === "question-mc"
       ? true
       : isVoid(element);
   };
@@ -151,6 +174,8 @@ const Element = (props: any) => {
       return <PuzzleElement {...props} />;
     case "question":
       return <QuestionElement {...props} />;
+    case "question-mc":
+      return <QuestionMCElement {...props} />;
     default:
       return <p {...attributes}>{children}</p>;
   }
@@ -163,6 +188,7 @@ const PuzzleElement = ({ attributes, children, element }: any) => {
     <span
       {...attributes}
       contentEditable={false}
+      onClick={() => console.log("click")}
       style={{
         padding: "3px 3px 2px",
         margin: "0 1px",
@@ -173,6 +199,7 @@ const PuzzleElement = ({ attributes, children, element }: any) => {
         fontWeight: "600",
         color: "white",
         boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
+        cursor: "pointer",
       }}
     >
       {element.guide}
@@ -199,6 +226,33 @@ const QuestionElement = ({ attributes, children, element }: any) => {
         display: "inline-block",
         fontSize: "0.6em",
         boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
+        cursor: "pointer",
+      }}
+    >
+      {emptyText}
+      {children}
+    </span>
+  );
+};
+
+const QuestionMCElement = ({ attributes, children, element }: any) => {
+  const selected = useSelected();
+  const focused = useFocused();
+  const emptyText = " ";
+  return (
+    <span
+      {...attributes}
+      contentEditable={false}
+      style={{
+        textAlign: "center",
+        minWidth: "80px",
+        margin: "0 1px",
+        verticalAlign: "baseline",
+        border: "dotted 4px #007AFF",
+        display: "inline-block",
+        fontSize: "0.6em",
+        boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
+        cursor: "pointer",
       }}
     >
       {emptyText}
@@ -225,6 +279,20 @@ const Leaf = ({ attributes, children, leaf }: any) => {
   }
 
   return <span {...attributes}>{children}</span>;
+};
+
+const EditButton = ({ icon, editable, setEditable }: any) => {
+  return (
+    <Button
+      onMouseDown={(event: any) => {
+        event.preventDefault();
+        setEditable(!editable);
+      }}
+    >
+      <Icon icon={editable ? "puzz_play" : icon} size={20} />
+      {editable ? "play" : "edit"}
+    </Button>
+  );
 };
 
 const BlockButton = ({ format, icon }: { format: string; icon: string }) => {
@@ -283,6 +351,10 @@ const MakeQuest = ({ editor, target, setTarget, format }: any) => {
       if (!guide) return;
     }
 
+    if (format === "question-mc") {
+      guide = window.prompt(`"${originalText}"유사한 보기를 작성해주세요`);
+      if (!guide) return;
+    }
     insertQuest(editor, answer, guide, format);
 
     //두번 입력방지와 강제로 커서를 위치시킨다. 현재는 필요가 없지만 나중에 활용
@@ -366,8 +438,17 @@ const initialValue = [
     type: "paragraph",
     children: [
       {
+        text: "The United States is a nation ",
+      },
+      {
+        type: "question-mc",
+        answer: ["of", "for", "to", "in"],
+        guide: "",
+        children: [{ text: "" }],
+      },
+      {
         text:
-          "The United States is a nation of immigrants. People immigrate to the U.S. from all over the world.",
+          " immigrants. People immigrate to the U.S. from all over the world.",
       },
     ],
   },
@@ -394,7 +475,18 @@ const initialValue = [
     children: [
       {
         text:
-          "Moving to another country is not always easy. Immigrants have to get used to their new homes. They often have to start a completely new way of life. They have to learn about a new culture and find new jobs and homes. They need to learn a new language as well.",
+          "Moving to another country is not always easy. Immigrants have to get used to their new homes. They often have to start a completely new way of life. ",
+      },
+      {
+        type: "puzzle",
+        answer: [
+          "They have to learn about a new culture and find new jobs and homes.",
+        ],
+        guide: "그들은 새로운 문명을 배우려 했고 새로운 직업과 집을 찾는다.",
+        children: [{ text: "" }],
+      },
+      {
+        text: " They need to learn a new language as well.",
       },
     ],
   },
