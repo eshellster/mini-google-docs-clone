@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import isHotkey from "is-hotkey";
 import {
   Editable,
@@ -7,11 +13,12 @@ import {
   Slate,
   useSelected,
   useFocused,
+  ReactEditor,
 } from "slate-react";
 import { Editor, Transforms, createEditor, Node, Range } from "slate";
 import { withHistory } from "slate-history";
 
-import { Button, Toolbar } from "../components/Components";
+import { Button, Toolbar, HoverMenu, Portal } from "../components/Components";
 import Icon from "../Icon";
 
 const HOTKEYS: any = {
@@ -35,31 +42,13 @@ const RichText = () => {
 
   return (
     <Slate editor={editor} value={value} onChange={(value) => setValue(value)}>
+      <HoveringToolbar editor={editor} />
       <Toolbar className="toolbar">
         <EditButton
           editable={editable}
           setEditable={setEditable}
           icon="edynote"
         />
-        {editable ? (
-          <div>
-            <MarkButton format="bold" icon="format_Bold" />
-            <MarkButton format="italic" icon="format_italic" />
-            <MarkButton format="underline" icon="format_underlined" />
-            <MarkButton format="code" icon="code" />
-            <InlineBlockButton format="puzzle" icon="mix" />
-            <InlineBlockButton format="question" icon="format_question" />
-            <InlineBlockButton
-              format="question-mc"
-              icon="format_question_multiple_choice"
-            />
-            <BlockButton format="heading-one" icon="looks_one" />
-            <BlockButton format="heading-two" icon="looks_two" />
-            <BlockButton format="block-quote" icon="format_quote" />
-            <BlockButton format="numbered-list" icon="format_list_numbered" />
-            <BlockButton format="bulleted-list" icon="format_list_bulleted" />
-          </div>
-        ) : null}
       </Toolbar>
       <Editable
         style={{
@@ -106,6 +95,8 @@ const withQuest = (editor: any) => {
 
   return editor;
 };
+
+const _iOSDevice = !!navigator.platform.match(/iPhone|iPod|iPad/);
 
 const toggleBlock = (editor: Editor, format: any) => {
   const isActive = isBlockActive(editor, format);
@@ -305,7 +296,7 @@ const BlockButton = ({ format, icon }: { format: string; icon: string }) => {
         toggleBlock(editor, format);
       }}
     >
-      <Icon icon={icon} size={20} />
+      <Icon icon={icon} size={20} color="white" />
     </Button>
   );
 };
@@ -320,7 +311,7 @@ const MarkButton = ({ format, icon }: any) => {
         toggleMark(editor, format);
       }}
     >
-      <Icon icon={icon} size={20} />
+      <Icon icon={icon} size={20} color="white" />
     </Button>
   );
 };
@@ -389,8 +380,77 @@ const InlineBlockButton = ({ format, icon }: any) => {
         // 선택한 문장을 answer변수에 저장한다.
       }}
     >
-      <Icon icon={icon} size={20} color={isActive ? "gray" : "black"} />
+      <Icon icon={icon} size={20} color={isActive ? "gray" : "white"} />
     </Button>
+  );
+};
+
+const HoveringToolbar = (editable: any) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const editor = useSlate();
+
+  useEffect(() => {
+    const el = ref.current;
+    const { selection } = editor;
+
+    if (!el) {
+      return;
+    }
+
+    if (
+      !selection ||
+      !ReactEditor.isFocused(editor) ||
+      Range.isCollapsed(selection) ||
+      Editor.string(editor, selection) === ""
+    ) {
+      el.removeAttribute("style");
+      return;
+    }
+
+    const domSelection = window.getSelection();
+    const domRange = domSelection?.getRangeAt(0);
+    const rect = domRange?.getBoundingClientRect();
+    if (rect) {
+      if (_iOSDevice) {
+        el.style.opacity = "1";
+        el.style.top = `${rect.top + window.pageYOffset + 28}px`;
+        el.style.left = `${
+          rect.left + window.pageXOffset - el.offsetWidth / 2 + rect.width / 2
+        }px`;
+      } else {
+        el.style.opacity = "1";
+        el.style.top = `${rect.top + window.pageYOffset - el.offsetHeight}px`;
+        el.style.left = `${
+          rect.left + window.pageXOffset - el.offsetWidth / 2 + rect.width / 2
+        }px`;
+      }
+    }
+  });
+
+  return (
+    <Portal>
+      <HoverMenu ref={ref}>
+        {editable ? (
+          <div>
+            <MarkButton format="bold" icon="format_Bold" />
+            <MarkButton format="italic" icon="format_italic" />
+            <MarkButton format="underline" icon="format_underlined" />
+            <MarkButton format="code" icon="code" />
+            <InlineBlockButton format="puzzle" icon="mix" />
+            <InlineBlockButton format="question" icon="format_question" />
+            <InlineBlockButton
+              format="question-mc"
+              icon="format_question_multiple_choice"
+            />
+            <BlockButton format="heading-one" icon="looks_one" />
+            <BlockButton format="heading-two" icon="looks_two" />
+            <BlockButton format="block-quote" icon="format_quote" />
+            <BlockButton format="numbered-list" icon="format_list_numbered" />
+            <BlockButton format="bulleted-list" icon="format_list_bulleted" />
+          </div>
+        ) : null}
+      </HoverMenu>
+    </Portal>
   );
 };
 
