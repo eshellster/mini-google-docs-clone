@@ -413,9 +413,13 @@ const HoveringToolbar = (editable: any) => {
     if (rect) {
       if (_iOSDevice) {
         el.style.opacity = "1";
-        el.style.top = `${rect.top + window.pageYOffset + 28}px`;
+        el.style.top = `${rect.bottom + window.pageYOffset + 28}px`;
         el.style.left = `${
-          rect.left + window.pageXOffset - el.offsetWidth / 2 + rect.width / 2
+          (rect.left +
+            window.pageXOffset -
+            el.offsetWidth / 2 +
+            rect.width / 2) *
+          0.4
         }px`;
       } else {
         el.style.opacity = "1";

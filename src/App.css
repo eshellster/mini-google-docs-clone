@@ -26,6 +26,12 @@
   font-size: calc(10px + 1vmin);
 }
 
+@media (min-device-width: 320px) and (max-device-width: 768px) {
+  .App-header {
+    width: 80%;
+  }
+}
+
 .App-link {
   color: #61dafb;
 }
