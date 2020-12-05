@@ -408,26 +408,71 @@ const HoveringToolbar = (editable: any) => {
     }
 
     const domSelection = window.getSelection();
+
     const domRange = domSelection?.getRangeAt(0);
     const rect = domRange?.getBoundingClientRect();
+    // console.log("셀렉션:", rect);
+    // console.log("element길이:", el.offsetWidth);
+
     if (rect) {
-      if (_iOSDevice) {
-        el.style.opacity = "1";
-        el.style.top = `${rect.bottom + window.pageYOffset + 28}px`;
-        el.style.left = `${
-          (rect.left +
-            window.pageXOffset -
-            el.offsetWidth / 2 +
-            rect.width / 2) *
-          0.4
-        }px`;
+      const rectCenter = rect.left + rect.width / 2;
+      // 메뉴가 화면보다 클때
+      if (el.offsetWidth > window.innerWidth) {
+        el.style.left = "0px";
+        // 메뉴 시작 위치 화면 밖으로 나가면
+      } else if (rectCenter < el.offsetWidth / 2) {
+        el.style.left = "20px";
+        // 메뉴 끝의 위치 화면 밖으로 나가면
+      } else if (rectCenter + el.offsetWidth / 2 > window.innerWidth) {
+        el.style.left = `${window.innerWidth - el.offsetWidth - 20}px`;
+        // 선택 문자의 중앙
       } else {
-        el.style.opacity = "1";
-        el.style.top = `${rect.top + window.pageYOffset - el.offsetHeight}px`;
         el.style.left = `${
           rect.left + window.pageXOffset - el.offsetWidth / 2 + rect.width / 2
         }px`;
       }
+
+      if (_iOSDevice) {
+        el.style.opacity = "1";
+        el.style.top = `${rect.bottom + window.pageYOffset + 28}px`;
+      } else {
+        el.style.opacity = "1";
+        el.style.top = `${rect.top + window.pageYOffset - el.offsetHeight}px`;
+      }
+
+      // if (_iOSDevice) {
+      //   el.style.opacity = "1";
+      //   el.style.top = `${rect.bottom + window.pageYOffset + 28}px`;
+
+      //   if (rect.x < el.offsetWidth / 2) {
+      //     el.style.left = "20px";
+      //     // 메뉴 끝의 위치 화면 밖으로 나가면
+      //   } else if (rect.x + el.offsetWidth / 2 > window.innerWidth) {
+      //     el.style.left = `${window.innerWidth - el.offsetWidth - 20}px`;
+      //     // 선택 문자의 중앙
+      //   } else {
+      //     el.style.left = `${
+      //       rect.left + window.pageXOffset - el.offsetWidth / 2 + rect.width / 2
+      //     }px`;
+      //   }
+      // } else {
+      //   el.style.opacity = "1";
+      //   el.style.top = `${rect.top + window.pageYOffset - el.offsetHeight}px`;
+
+      //   console.log(`${rect.left + rect.width / 2} -- ${el.offsetWidth}`);
+      //   // 메뉴 시작 위치 화면 밖으로 나가면
+      //   if (rectCenter < el.offsetWidth / 2) {
+      //     el.style.left = "20px";
+      //     // 메뉴 끝의 위치 화면 밖으로 나가면
+      //   } else if (rectCenter + el.offsetWidth / 2 > window.innerWidth) {
+      //     el.style.left = `${window.innerWidth - el.offsetWidth - 20}px`;
+      //     // 선택 문자의 중앙
+      //   } else {
+      //     el.style.left = `${
+      //       rect.left + window.pageXOffset - el.offsetWidth / 2 + rect.width / 2
+      //     }px`;
+      //   }
+      // }
     }
   });
 

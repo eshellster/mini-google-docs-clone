@@ -105,4 +105,8 @@ button:focus {
   margin: 0 -20px;
   border-bottom: 2px solid #eee;
   margin-bottom: 20px;
+  -moz-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
 }
