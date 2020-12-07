@@ -16,8 +16,8 @@
 }
 
 .App-header {
-  max-width: 700px;
-  width: 66%;
+  max-width: 600px;
+  width: 70%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -26,7 +26,7 @@
   font-size: calc(10px + 1vmin);
 }
 
-@media (min-device-width: 320px) and (max-device-width: 768px) {
+@media (max-device-width: 768px) {
   .App-header {
     width: 80%;
   }
