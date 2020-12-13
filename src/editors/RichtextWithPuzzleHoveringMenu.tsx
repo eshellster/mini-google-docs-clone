@@ -33,7 +33,10 @@ const LIST_TYPES = ["numbered-list", "bulleted-list"];
 const RichText = () => {
   const [value, setValue] = useState<Node[]>(initialValue);
   const [editable, setEditable] = useState(true);
-  const renderElement = useCallback((props) => <Element {...props} />, []);
+  const renderElement = useCallback(
+    (props) => <Element {...props} setEditable={setEditable} />,
+    []
+  );
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
   const editor = useMemo(
     () => withQuest(withHistory(withReact(createEditor()))),
@@ -42,7 +45,7 @@ const RichText = () => {
 
   return (
     <Slate editor={editor} value={value} onChange={(value) => setValue(value)}>
-      <HoveringToolbar editor={editor} />
+      <HoveringToolbar editor={editor} setEditable={setEditable} />
       <Toolbar className="toolbar">
         <EditButton
           editable={editable}
@@ -179,14 +182,22 @@ const Element = (props: any) => {
   }
 };
 
-const PuzzleElement = ({ attributes, children, element }: any) => {
+const PuzzleElement = ({ attributes, children, element, setEditable }: any) => {
   const selected = useSelected();
   const focused = useFocused();
   return (
     <span
       {...attributes}
       contentEditable={false}
-      onClick={() => console.log("click")}
+      onMouseDown={(event: any) => {
+        event.preventDefault();
+        setEditable(false);
+      }}
+      onMouseUp={(event: any) => {
+        event.preventDefault();
+        setEditable(true);
+      }}
+      onClick={() => console.log("puzzleElement 클릭")}
       style={{
         padding: "3px 3px 2px",
         margin: "0 1px",
@@ -392,7 +403,7 @@ const InlineBlockButton = ({ format, icon }: any) => {
   );
 };
 
-const HoveringToolbar = (editable: any) => {
+const HoveringToolbar = (editable: any, setEditable: any) => {
   const ref = useRef<HTMLDivElement>(null);
   const editor = useSlate();
 
@@ -446,40 +457,6 @@ const HoveringToolbar = (editable: any) => {
         el.style.opacity = "1";
         el.style.top = `${rect.top + window.pageYOffset - el.offsetHeight}px`;
       }
-
-      // if (_iOSDevice) {
-      //   el.style.opacity = "1";
-      //   el.style.top = `${rect.bottom + window.pageYOffset + 28}px`;
-
-      //   if (rect.x < el.offsetWidth / 2) {
-      //     el.style.left = "20px";
-      //     // 메뉴 끝의 위치 화면 밖으로 나가면
-      //   } else if (rect.x + el.offsetWidth / 2 > window.innerWidth) {
-      //     el.style.left = `${window.innerWidth - el.offsetWidth - 20}px`;
-      //     // 선택 문자의 중앙
-      //   } else {
-      //     el.style.left = `${
-      //       rect.left + window.pageXOffset - el.offsetWidth / 2 + rect.width / 2
-      //     }px`;
-      //   }
-      // } else {
-      //   el.style.opacity = "1";
-      //   el.style.top = `${rect.top + window.pageYOffset - el.offsetHeight}px`;
-
-      //   console.log(`${rect.left + rect.width / 2} -- ${el.offsetWidth}`);
-      //   // 메뉴 시작 위치 화면 밖으로 나가면
-      //   if (rectCenter < el.offsetWidth / 2) {
-      //     el.style.left = "20px";
-      //     // 메뉴 끝의 위치 화면 밖으로 나가면
-      //   } else if (rectCenter + el.offsetWidth / 2 > window.innerWidth) {
-      //     el.style.left = `${window.innerWidth - el.offsetWidth - 20}px`;
-      //     // 선택 문자의 중앙
-      //   } else {
-      //     el.style.left = `${
-      //       rect.left + window.pageXOffset - el.offsetWidth / 2 + rect.width / 2
-      //     }px`;
-      //   }
-      // }
     }
   });
 
@@ -509,38 +486,6 @@ const HoveringToolbar = (editable: any) => {
     </Portal>
   );
 };
-
-// const MakeQuestionButton = (format) => {
-//   const editor = useSlate();
-//   // 선택된 문자열의 시작과 끝 지점 값
-//   const [target, setTarget] = useState<Range | null>();
-
-//   const isActive = isQuestActive(editor);
-
-//   // 선택된 에디터를 가져온다.
-
-//   // 커서가 문자를 선택한 상태
-
-//   return (
-//     <Button
-//       active={isBlockActive(editor,format)}
-//       onMouseDown={(event: any) => {
-//         event.preventDefault();
-//         //퍼즐이 포함 되어있으면 작동 안함
-//         if (!isActive) {
-//           MakePuzzle({ editor, target, setTarget });
-//         }
-//         // 선택한 문장을 answer변수에 저장한다.
-//       }}
-//     >
-//       <Icon
-//         icon="format_Puzzle"
-//         size={20}
-//         color={isActive ? "gray" : "black"}
-//       />
-//     </Button>
-//   );
-// };
 
 const initialValue = [
   {
