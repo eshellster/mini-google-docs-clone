@@ -99,7 +99,8 @@ const withQuest = (editor: any) => {
   return editor;
 };
 
-const _iOSDevice = !!navigator.platform.match(/iPhone|iPod|iPad/);
+const _iOSDevice = !!navigator.userAgent.match(/iPhone|iPod|iPad/);
+const _AndroidDevice = !!navigator.userAgent.match(/Tablet|Android/);
 
 const toggleBlock = (editor: Editor, format: any) => {
   const isActive = isBlockActive(editor, format);
@@ -191,13 +192,12 @@ const PuzzleElement = ({ attributes, children, element, setEditable }: any) => {
       contentEditable={false}
       onMouseDown={(event: any) => {
         event.preventDefault();
-        setEditable(false);
+        if (_iOSDevice || _AndroidDevice) setEditable(false);
       }}
       onMouseUp={(event: any) => {
         event.preventDefault();
-        setEditable(true);
+        if (_iOSDevice || _AndroidDevice) setEditable(true);
       }}
-      onClick={() => console.log("puzzleElement 클릭")}
       style={{
         padding: "3px 3px 2px",
         margin: "0 1px",
@@ -341,7 +341,6 @@ const insertQuest = (editor: any, answer: any, guide: any, format: any) => {
 
 const MakeQuest = ({ editor, target, setTarget, format }: any) => {
   const { selection } = editor;
-  console.log(selection);
   const originalText = window.getSelection()?.toString();
   const answer = originalText;
   if (selection && !Range.isCollapsed(selection)) {
@@ -450,7 +449,7 @@ const HoveringToolbar = (editable: any, setEditable: any) => {
         }px`;
       }
 
-      if (_iOSDevice) {
+      if (_iOSDevice || _AndroidDevice) {
         el.style.opacity = "1";
         el.style.top = `${rect.bottom + window.pageYOffset + 28}px`;
       } else {
