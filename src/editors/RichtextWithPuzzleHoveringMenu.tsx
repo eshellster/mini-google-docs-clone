@@ -46,18 +46,8 @@ const RichText = () => {
   return (
     <Slate editor={editor} value={value} onChange={(value) => setValue(value)}>
       <HoveringToolbar editor={editor} setEditable={setEditable} />
-      <Toolbar className="toolbar">
-        <EditButton
-          editable={editable}
-          setEditable={setEditable}
-          icon="edynote"
-        />
-      </Toolbar>
+      <Toolbar className="toolbar"></Toolbar>
       <Editable
-        style={{
-          border: editable ? "dotted 1px gray" : "dotted 1px white",
-          padding: "0 10px 2px 10px",
-        }}
         readOnly={!editable}
         renderElement={renderElement}
         renderLeaf={renderLeaf}
@@ -290,20 +280,6 @@ const Leaf = ({ attributes, children, leaf }: any) => {
   return <span {...attributes}>{children}</span>;
 };
 
-const EditButton = ({ icon, editable, setEditable }: any) => {
-  return (
-    <Button
-      onMouseDown={(event: any) => {
-        event.preventDefault();
-        setEditable(!editable);
-      }}
-    >
-      <Icon icon={editable ? "puzz_play" : icon} size={20} />
-      {editable ? "play" : "edit"}
-    </Button>
-  );
-};
-
 const BlockButton = ({ format, icon }: { format: string; icon: string }) => {
   const editor = useSlate();
   return (
@@ -464,16 +440,17 @@ const HoveringToolbar = (editable: any, setEditable: any) => {
       <HoverMenu ref={ref}>
         {editable ? (
           <div>
-            <MarkButton format="bold" icon="format_Bold" />
+            <MarkButton format="bold" icon="format_bold" />
             <MarkButton format="italic" icon="format_italic" />
             <MarkButton format="underline" icon="format_underlined" />
             <MarkButton format="code" icon="code" />
-            <InlineBlockButton format="puzzle" icon="mix" />
+            <InlineBlockButton format="puzzle" icon="format_puzzle" />
             <InlineBlockButton format="question" icon="format_question" />
             <InlineBlockButton
               format="question-mc"
               icon="format_question_multiple_choice"
             />
+            {/* <InlineBlockButton format="description" icon="format_description" /> */}
             <BlockButton format="heading-one" icon="looks_one" />
             <BlockButton format="heading-two" icon="looks_two" />
             <BlockButton format="block-quote" icon="format_quote" />
