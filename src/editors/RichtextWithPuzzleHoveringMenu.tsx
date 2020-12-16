@@ -407,6 +407,7 @@ const QuestionBlockButton = ({ format, icon }: any) => {
 const HoveringToolbar = (editable: any, setEditable: any) => {
   const ref = useRef<HTMLDivElement>(null);
   const editor = useSlate();
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const el = ref.current;
@@ -416,7 +417,16 @@ const HoveringToolbar = (editable: any, setEditable: any) => {
       return;
     }
 
+    if (_iOSDevice || _AndroidDevice) {
+      document.addEventListener("touchstart", () => setVisible(false));
+      document.addEventListener("touchend", () => setVisible(true));
+    } else {
+      document.addEventListener("selectionchange", () => setVisible(false));
+      document.addEventListener("mouseup", () => setVisible(true));
+    }
+
     if (
+      !visible ||
       !selection ||
       !ReactEditor.isFocused(editor) ||
       Range.isCollapsed(selection) ||
@@ -424,6 +434,16 @@ const HoveringToolbar = (editable: any, setEditable: any) => {
     ) {
       el.removeAttribute("style");
       return;
+    }
+
+    if (
+      !visible &&
+      ReactEditor.isFocused(editor) &&
+      Editor.string(editor, selection) !== ""
+    ) {
+      console.log("setTime");
+
+      setTimeout(() => setVisible(true), 500);
     }
 
     const domSelection = window.getSelection();
