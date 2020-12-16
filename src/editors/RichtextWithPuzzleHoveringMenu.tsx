@@ -72,16 +72,14 @@ const withQuest = (editor: any) => {
   const { isInline, isVoid } = editor;
 
   editor.isInline = (element: any) => {
-    return element.type === "puzzle" ||
-      element.type === "question" ||
-      element.type === "question-mc"
+    return element.type === "word_ordering-question" ||
+      element.type === "answer_test-question"
       ? true
       : isInline(element);
   };
   editor.isVoid = (element: any) => {
-    return element.type === "puzzle" ||
-      element.type === "question" ||
-      element.type === "question-mc"
+    return element.type === "word_ordering-question" ||
+      element.type === "answer_test-question"
       ? true
       : isVoid(element);
   };
@@ -122,16 +120,15 @@ const toggleMark = (editor: Editor, format: string) => {
 };
 
 const isBlockActive = (editor: Editor, format: any) => {
-  if (
-    format === "puzzle" ||
-    format === "question" ||
-    format === "question-mc"
-  ) {
+  if (format.match("-question")) {
     const [match] = Editor.nodes(editor, {
       match: (n) =>
-        n.type === "puzzle" ||
-        n.type === "question" ||
-        n.type === "question-mc",
+        n.type === "word_ordering-question" ||
+        n.type === "answer_test-question" ||
+        n.type === "choice-question" ||
+        n.type === "ordering-question" ||
+        n.type === "match_pairs-question" ||
+        n.type === "written_test-question",
     });
     return !!match;
   } else {
@@ -162,11 +159,11 @@ const Element = (props: any) => {
       return <li {...attributes}>{children}</li>;
     case "numbered-list":
       return <ol {...attributes}>{children}</ol>;
-    case "puzzle":
+    case "word_ordering-question":
       return <PuzzleElement {...props} />;
-    case "question":
+    case "answer_test-question":
       return <QuestionElement {...props} />;
-    case "question-mc":
+    case "choice-question":
       return <QuestionMCElement {...props} />;
     default:
       return <p {...attributes}>{children}</p>;
@@ -330,12 +327,12 @@ const MakeQuest = ({ editor, target, setTarget, format }: any) => {
     }
 
     let guide = null;
-    if (format === "puzzle") {
+    if (format === "word_ordering-question") {
       guide = window.prompt(`"${originalText}"의 해석`);
       if (!guide) return;
     }
 
-    if (format === "question-mc") {
+    if (format === "choice-question") {
       guide = window.prompt(`"${originalText}"유사한 보기를 작성해주세요`);
       if (!guide) return;
     }
@@ -350,13 +347,42 @@ const MakeQuest = ({ editor, target, setTarget, format }: any) => {
   }
 };
 
-const InlineBlockButton = ({ format, icon }: any) => {
+const QuestionInlineBlockButton = ({ format, icon }: any) => {
   const editor = useSlate();
   // 선택된 문자열의 시작과 끝 지점 값
   const [target, setTarget] = useState<Range | null>();
 
   const isActive = isBlockActive(editor, format);
 
+  // 선택된 에디터를 가져온다.
+  if (isActive) return null;
+  // 커서가 문자를 선택한 상태
+
+  return (
+    <Button
+      active={isBlockActive(editor, format)}
+      onMouseDown={(event: any) => {
+        event.preventDefault();
+        //퍼즐이 포함 되어있으면 작동 안함
+        if (!isActive) {
+          MakeQuest({ editor, target, setTarget, format });
+        }
+        // 선택한 문장을 answer변수에 저장한다.
+      }}
+    >
+      <Icon icon={icon} size={20} color={isActive ? "gray" : "white"} />
+    </Button>
+  );
+};
+
+const QuestionBlockButton = ({ format, icon }: any) => {
+  const editor = useSlate();
+  // 선택된 문자열의 시작과 끝 지점 값
+  const [target, setTarget] = useState<Range | null>();
+
+  const isActive = isBlockActive(editor, format);
+
+  if (isActive) return null;
   // 선택된 에디터를 가져온다.
 
   // 커서가 문자를 선택한 상태
@@ -444,13 +470,32 @@ const HoveringToolbar = (editable: any, setEditable: any) => {
             <MarkButton format="italic" icon="format_italic" />
             <MarkButton format="underline" icon="format_underlined" />
             <MarkButton format="code" icon="code" />
-            <InlineBlockButton format="puzzle" icon="format_puzzle" />
-            <InlineBlockButton format="question" icon="format_question" />
-            <InlineBlockButton
-              format="question-mc"
-              icon="format_question_multiple_choice"
+            |
+            <QuestionInlineBlockButton
+              format="answer_test-question"
+              icon="format_answer_test_question"
             />
-            {/* <InlineBlockButton format="description" icon="format_description" /> */}
+            <QuestionInlineBlockButton
+              format="word_ordering-question"
+              icon="format_word_ordering_question"
+            />
+            <QuestionBlockButton
+              format="choice-question"
+              icon="format_multiple_choice_question"
+            />
+            <QuestionBlockButton
+              format="ordering-question"
+              icon="format_ordering_question"
+            />
+            <QuestionBlockButton
+              format="match_pairs-question"
+              icon="format_match_pairs_question"
+            />
+            <QuestionBlockButton
+              format="written_test-question"
+              icon="format_written_question"
+            />
+            |
             <BlockButton format="heading-one" icon="looks_one" />
             <BlockButton format="heading-two" icon="looks_two" />
             <BlockButton format="block-quote" icon="format_quote" />
@@ -478,7 +523,7 @@ const initialValue = [
         text: "The United States is a nation ",
       },
       {
-        type: "question-mc",
+        type: "choice-question",
         answer: ["of", "for", "to", "in"],
         guide: "",
         children: [{ text: "" }],
@@ -515,7 +560,7 @@ const initialValue = [
           "Moving to another country is not always easy. Immigrants have to get used to their new homes. They often have to start a completely new way of life. ",
       },
       {
-        type: "puzzle",
+        type: "word_ordering-question",
         answer: [
           "They have to learn about a new culture and find new jobs and homes.",
         ],

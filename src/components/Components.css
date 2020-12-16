@@ -1,4 +1,6 @@
 .hoverMenu {
+  color: gray;
+  font-weight: 800;
   padding: 8px 7px 6px;
   position: absolute;
   z-index: 1;
@@ -14,7 +16,7 @@
   display: inline-block;
 }
 .menu > * * {
-  margin-left: 5px;
+  margin: 0 3px 0 3px;
 }
 .button {
   cursor: pointer;
