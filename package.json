@@ -15,6 +15,7 @@
     "is-hotkey": "^0.1.7",
     "is-url": "^1.2.4",
     "mitt": "^2.1.0",
+    "modal-edy": "^1.4.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.0",

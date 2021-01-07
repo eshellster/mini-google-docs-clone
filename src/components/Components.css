@@ -1,23 +1,27 @@
 .hoverMenu {
-  color: gray;
   font-weight: 800;
-  padding: 8px 7px 6px;
+  /* padding: 8px 7px 6px; */
   position: absolute;
   z-index: 1;
   top: -10000px;
   left: -10000px;
   margin-top: -6px;
   opacity: 0;
-  background-color: #222;
+  background-color: white;
   border-radius: 4px;
   transition: opacity 0.75s;
+  box-shadow: 3px 5px 20px rgb(172, 172, 172);
 }
 .menu > * {
   display: inline-block;
 }
 .menu > * * {
-  margin: 0 3px 0 3px;
 }
+.menu svg {
+  padding: 6px;
+  border-right: solid 1px lightGray;
+}
+
 .button {
   cursor: pointer;
 }
